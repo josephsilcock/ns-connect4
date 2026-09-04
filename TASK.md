@@ -2,8 +2,7 @@
 
 ## Learning Objectives
 
-- React/ NextJS
-- REST APIs
+- React/NextJS
 - Databases
 - Object-relational mappers (ORMs)
 - Docker (briefly)
