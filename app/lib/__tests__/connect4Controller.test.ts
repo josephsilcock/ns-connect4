@@ -1,5 +1,9 @@
 import { Connect4Controller } from "../connect4Controller";
 
+/** Plays the given columns in order, alternating players. */
+const play = (controller: Connect4Controller, columns: number[]) =>
+  columns.map((column) => controller.makeMove(column));
+
 describe("Connect4Controller", () => {
   describe("makeMove", () => {
     it("should fill a 1x1 grid when making a move in column 0", () => {
@@ -104,6 +108,150 @@ describe("Connect4Controller", () => {
       expect(status.currentPlayer).toBe(1);
       expect(status.state).toBe("ongoing");
       expect(status.board.flat().every((cell) => cell === 0)).toBe(true);
+    });
+  });
+
+  describe("win detection", () => {
+    it("should not report a winner while the game is ongoing", () => {
+      const controller = new Connect4Controller(7, 6);
+      controller.newGame();
+
+      const status = play(controller, [0, 1, 0, 1]).at(-1);
+
+      expect(status?.state).toBe("ongoing");
+      expect(status?.winner).toBeUndefined();
+    });
+
+    it("should detect a vertical win", () => {
+      const controller = new Connect4Controller(7, 6);
+      controller.newGame();
+
+      const status = play(controller, [0, 1, 0, 1, 0, 1, 0]).at(-1);
+
+      expect(status?.state).toBe("won");
+      expect(status?.winner).toBe(1);
+    });
+
+    it("should detect a horizontal win", () => {
+      const controller = new Connect4Controller(7, 6);
+      controller.newGame();
+
+      const status = play(controller, [0, 0, 1, 1, 2, 2, 3]).at(-1);
+
+      expect(status?.state).toBe("won");
+      expect(status?.winner).toBe(1);
+    });
+
+    it("should detect a bottom-left to top-right diagonal win", () => {
+      const controller = new Connect4Controller(7, 6);
+      controller.newGame();
+
+      const status = play(
+        controller,
+        [0, 1, 1, 2, 6, 2, 2, 3, 6, 3, 6, 3, 3],
+      ).at(-1);
+
+      expect(status?.state).toBe("won");
+      expect(status?.winner).toBe(1);
+      expect([
+        status?.board[5][0],
+        status?.board[4][1],
+        status?.board[3][2],
+        status?.board[2][3],
+      ]).toEqual([1, 1, 1, 1]);
+    });
+
+    it("should detect a bottom-right to top-left diagonal win", () => {
+      const controller = new Connect4Controller(7, 6);
+      controller.newGame();
+
+      const status = play(
+        controller,
+        [6, 5, 5, 4, 0, 4, 4, 3, 0, 3, 0, 3, 3],
+      ).at(-1);
+
+      expect(status?.state).toBe("won");
+      expect(status?.winner).toBe(1);
+    });
+
+    it("should let player 2 win", () => {
+      const controller = new Connect4Controller(7, 6);
+      controller.newGame();
+
+      const status = play(controller, [0, 1, 0, 1, 0, 1, 5, 1]).at(-1);
+
+      expect(status?.state).toBe("won");
+      expect(status?.winner).toBe(2);
+    });
+
+    it("should keep the winner as the current player rather than switching", () => {
+      const controller = new Connect4Controller(7, 6);
+      controller.newGame();
+
+      const status = play(controller, [0, 1, 0, 1, 0, 1, 0]).at(-1);
+
+      expect(status?.currentPlayer).toBe(1);
+    });
+
+    it("should reject further moves once the game is won", () => {
+      const controller = new Connect4Controller(7, 6);
+      controller.newGame();
+      play(controller, [0, 1, 0, 1, 0, 1, 0]);
+
+      expect(controller.makeMove(4)).toBeNull();
+      expect(controller.getStatus().state).toBe("won");
+      expect(controller.getStatus().winner).toBe(1);
+    });
+
+    it("should not count a line of four made up of both players", () => {
+      const controller = new Connect4Controller(7, 6);
+      controller.newGame();
+
+      const status = play(controller, [0, 1, 2, 3]).at(-1);
+
+      expect(status?.state).toBe("ongoing");
+    });
+
+    it("should clear the winner on newGame", () => {
+      const controller = new Connect4Controller(7, 6);
+      controller.newGame();
+      play(controller, [0, 1, 0, 1, 0, 1, 0]);
+
+      const status = controller.newGame();
+
+      expect(status.state).toBe("ongoing");
+      expect(status.winner).toBeUndefined();
+    });
+  });
+
+  describe("draw detection", () => {
+    it("should declare a draw when the board fills with no winner", () => {
+      const controller = new Connect4Controller(4, 1);
+      controller.newGame();
+
+      const status = play(controller, [0, 1, 2, 3]).at(-1);
+
+      expect(status?.state).toBe("draw");
+      expect(status?.winner).toBeUndefined();
+      expect(status?.board[0]).toEqual([1, 2, 1, 2]);
+    });
+
+    it("should reject further moves once the game is drawn", () => {
+      const controller = new Connect4Controller(4, 1);
+      controller.newGame();
+      play(controller, [0, 1, 2, 3]);
+
+      expect(controller.makeMove(0)).toBeNull();
+      expect(controller.getStatus().state).toBe("draw");
+    });
+
+    it("should stay ongoing while any cell remains empty", () => {
+      const controller = new Connect4Controller(4, 1);
+      controller.newGame();
+
+      const status = play(controller, [0, 1, 2]).at(-1);
+
+      expect(status?.state).toBe("ongoing");
     });
   });
 });

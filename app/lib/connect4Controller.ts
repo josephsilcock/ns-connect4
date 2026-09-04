@@ -8,12 +8,23 @@ export interface GameStatus {
   board: Player[][];
 }
 
+const WIN_LENGTH = 4;
+
+// The four axes to search along: horizontal, vertical and the two diagonals.
+const DIRECTIONS: ReadonlyArray<readonly [number, number]> = [
+  [0, 1], // horizontal
+  [1, 0], // vertical
+  [1, 1], // diagonal down-right
+  [1, -1], // diagonal down-left
+];
+
 export class Connect4Controller {
   public width: number;
   private height: number;
   private board: Player[][];
   private currentPlayer: Player = 1;
   private gameState: GameState = "idle";
+  private winner?: Player;
 
   constructor(width: number, height: number) {
     this.width = width;
@@ -29,6 +40,7 @@ export class Connect4Controller {
     this.board = this.initializeBoard();
     this.currentPlayer = 1;
     this.gameState = "ongoing";
+    this.winner = undefined;
     return this.getStatus();
   }
 
@@ -42,9 +54,64 @@ export class Connect4Controller {
     if (row === null) return null;
 
     this.board[row][column] = this.currentPlayer;
-    this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
+
+    if (this.isWinningMove(row, column)) {
+      this.gameState = "won";
+      this.winner = this.currentPlayer;
+    } else if (this.isBoardFull()) {
+      this.gameState = "draw";
+    } else {
+      this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
+    }
 
     return this.getStatus();
+  }
+
+  /**
+   * A move can only ever complete a line through the cell just played, so we
+   * only need to look outwards from that cell along each of the four axes.
+   */
+  private isWinningMove(row: number, column: number): boolean {
+    const player = this.board[row][column];
+    if (player === 0) return false;
+
+    return DIRECTIONS.some(([rowStep, colStep]) => {
+      const line =
+        1 +
+        this.countInDirection(row, column, rowStep, colStep, player) +
+        this.countInDirection(row, column, -rowStep, -colStep, player);
+      return line >= WIN_LENGTH;
+    });
+  }
+
+  private countInDirection(
+    row: number,
+    column: number,
+    rowStep: number,
+    colStep: number,
+    player: Player,
+  ): number {
+    let count = 0;
+    let r = row + rowStep;
+    let c = column + colStep;
+
+    while (
+      r >= 0 &&
+      r < this.height &&
+      c >= 0 &&
+      c < this.width &&
+      this.board[r][c] === player
+    ) {
+      count++;
+      r += rowStep;
+      c += colStep;
+    }
+
+    return count;
+  }
+
+  private isBoardFull(): boolean {
+    return this.board.every((row) => row.every((cell) => cell !== 0));
   }
 
   private findLowestEmptyRow(column: number): number | null {
@@ -58,7 +125,7 @@ export class Connect4Controller {
     return {
       board: this.board.map((row) => [...row]),
       state: this.gameState,
-      winner: this.gameState === "won" ? this.currentPlayer : undefined,
+      winner: this.winner,
       currentPlayer: this.currentPlayer,
     };
   }
