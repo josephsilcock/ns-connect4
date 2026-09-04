@@ -1,3 +1,6 @@
+import { GameSubmission } from "./database.types";
+import { submitGame } from "./submitGame";
+
 export type GameState = "ongoing" | "won" | "draw" | "idle";
 export type Player = 0 | 1 | 2; // 0 = empty, 1 = player 1, 2 = player 2
 
@@ -9,6 +12,11 @@ export interface GameStatus {
 }
 
 const WIN_LENGTH = 4;
+
+/** Recorded for both fields when a game ends in a draw: nobody won or lost. */
+const NO_PLAYER = 0;
+
+export type GameSubmitter = (submission: GameSubmission) => void;
 
 // The four axes to search along: horizontal, vertical and the two diagonals.
 const DIRECTIONS: ReadonlyArray<readonly [number, number]> = [
@@ -26,7 +34,11 @@ export class Connect4Controller {
   private gameState: GameState = "idle";
   private winner?: Player;
 
-  constructor(width: number, height: number) {
+  constructor(
+    width: number,
+    height: number,
+    private readonly submit: GameSubmitter = submitGame,
+  ) {
     this.width = width;
     this.height = height;
     this.board = this.initializeBoard();
@@ -58,8 +70,13 @@ export class Connect4Controller {
     if (this.isWinningMove(row, column)) {
       this.gameState = "won";
       this.winner = this.currentPlayer;
+      this.submit({
+        winner: this.currentPlayer,
+        loser: this.currentPlayer === 1 ? 2 : 1,
+      });
     } else if (this.isBoardFull()) {
       this.gameState = "draw";
+      this.submit({ winner: NO_PLAYER, loser: NO_PLAYER });
     } else {
       this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
     }
