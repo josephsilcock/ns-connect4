@@ -33,17 +33,30 @@ export class Connect4Controller {
   }
 
   public makeMove(column: number): GameStatus | null {
-    console.log("Dropping a token into a column:", column);
+    if (this.gameState !== "ongoing") return null;
+    if (!Number.isInteger(column) || column < 0 || column >= this.width) {
+      return null;
+    }
 
-    // This method needs to be implemented!
-    this.board[0][column] = this.currentPlayer;
+    const row = this.findLowestEmptyRow(column);
+    if (row === null) return null;
+
+    this.board[row][column] = this.currentPlayer;
+    this.currentPlayer = this.currentPlayer === 1 ? 2 : 1;
 
     return this.getStatus();
   }
 
+  private findLowestEmptyRow(column: number): number | null {
+    for (let row = this.height - 1; row >= 0; row--) {
+      if (this.board[row][column] === 0) return row;
+    }
+    return null;
+  }
+
   public getStatus(): GameStatus {
     return {
-      board: this.board,
+      board: this.board.map((row) => [...row]),
       state: this.gameState,
       winner: this.gameState === "won" ? this.currentPlayer : undefined,
       currentPlayer: this.currentPlayer,
