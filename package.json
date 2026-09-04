@@ -8,6 +8,8 @@
     "lint": "eslint && npx prettier -w .",
     "test": "jest",
     "test:watch": "jest --watch",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
     "db:migrate": "prisma migrate dev"
   },
   "dependencies": {

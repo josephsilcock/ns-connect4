@@ -6,6 +6,7 @@
 - REST APIs
 - Databases
 - Object-relational mappers (ORMs)
+- Docker (briefly)
 
 ## Tasks
 
@@ -77,16 +78,38 @@ We currently have a game, but no way of simply restarting it without refreshing 
 
 I have built a POST endpoint which updates the database with the scores using the Prisma ORM.
 
-You will need to create a database in PgAdmin before starting this task!
+The database is PostgreSQL, run locally in Docker via
+[`compose.yaml`](./compose.yaml), so there is nothing to install by hand. The
+container creates the `connect4` database on first start using the credentials
+already in `.env.example`, and keeps its data in a named Docker volume so it
+survives restarts.
+
+| Command                  | What it does                                    |
+| ------------------------ | ----------------------------------------------- |
+| `npm run db:up`          | Start PostgreSQL 18 in the background           |
+| `npm run db:down`        | Stop and remove the container, keeping the data |
+| `npm run db:migrate`     | Apply the Prisma migrations                     |
+| `docker compose down -v` | Stop the container **and delete all data**      |
 
 #### Task
 
 Look at the Prisma schema, and understand how the ORM works ([docs](https://www.prisma.io/docs)).
 
-1. Update the `.env` >`DATABASE_URL` with the credentials from PgAdmin
-2. Run the database migration (see `package.json` for the script)
+1. Create your `.env` and start the database:
+
+   ```bash
+   cp .env.example .env
+   npm run db:up
+   ```
+
+   The `DATABASE_URL` in `.env.example` already matches the container, so there
+   is nothing to edit.
+
+2. Run the database migration
 3. Use Postman/ curl to test the endpoint
-4. Use SQL select  in PgAdmin to check the test
+4. Use a SQL select to check the test:
+   1. I like to use the database UI within IntelliJ
+   2. You can also use a tool like [PgAdmin](https://www.pgadmin.org/)
 5. Update `makeMove` to automatically upload wins/ draws
 
 #### Acceptance criteria
@@ -103,14 +126,15 @@ We have a fully-functioning game whereby players can “pass-and-play”. This i
 
 How is this possible? At the moment, the state of the game is stored in the browser (`gameStatus`). This won’t do, since we’re trying to let separate browsers/ machines play the same game.
 
-We *could* store the state in our database in a table… or we could go for gold. It is possible to use an in-memory database like Redis and web sockets to play at the same time.
+We _could_ store the state in our database in a table… or we could go for gold. It is possible to use an in-memory database like Redis and web sockets to play at the same time.
 
 #### Task
 
 - Using AI tools to help you, look for a way to connect players over Redis.
-- You can run redis locally for development & the free tier in Redis Cloud to play online. Do _not_ use Redis Upstash, since it has no free tier. NextJS isn't designed for continuous connections, however 
+- You can run redis locally for development & the free tier in Redis Cloud to play online. Do _not_ use Redis Upstash, since it has no free tier. NextJS isn't designed for continuous connections, however
 
 Suggestion:
+
 1. You can start by modifying the initial game to just POST and stream the entire GameStatus.
 2. Then, you can move controller logic into the POST endpoint, so you only post the move
 3. Finally, you can implement multi-player
