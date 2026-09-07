@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import Grid from "./components/Grid";
 import { Connect4Controller } from "./lib/connect4Controller";
 
@@ -17,12 +16,6 @@ export default function Home() {
           <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
             A simple Connect 4 game
           </p>
-          <Link
-            href="/stats"
-            className="text-blue-500 hover:text-blue-600 text-sm"
-          >
-            View Statistics →
-          </Link>
         </div>
         <Grid controller={controller} />
       </main>
