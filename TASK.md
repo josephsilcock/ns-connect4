@@ -75,24 +75,34 @@ We currently have a game, but no way of simply restarting it without refreshing 
 
 #### Background
 
-I have built a POST endpoint which updates the database with the scores using the Prisma ORM.
+Finished games currently go nowhere. There is a `POST /api/games` endpoint in
+[`app/api/games/route.ts`](./app/api/games/route.ts), but it is not finished yet.
 
-The database is PostgreSQL, run locally in Docker via
-[`compose.yaml`](./compose.yaml), so there is nothing to install by hand. The
-container creates the `connect4` database on first start using the credentials
-already in `.env.example`, and keeps its data in a named Docker volume so it
-survives restarts.
+We are using an ORM called [Prisma](https://www.prisma.io/docs) to work with the database. An ORM (Object-Relational 
+Mapping) is a tool that allows us to use the language we are coding in (in this case Typescript) to work with the database.
+This means we can separate raw SQL out of our code.
+
+What is already provided for you:
+
+- `compose.yaml` — PostgreSQL 18 running locally in Docker, so there is nothing
+  to install by hand. The container creates the `connect4` database on first
+  start using the same credentials as in `.env.example`, and keeps its data in a named
+  Docker volume so it survives restarts.
+- `app/lib/prisma.ts` — a Prisma client singleton, so Next's dev-mode hot
+  reloading doesn't open a new connection pool on every edit.
+- `prisma/contract.prisma` - 
 
 | Command                  | What it does                                    |
 | ------------------------ | ----------------------------------------------- |
 | `npm run db:up`          | Start PostgreSQL 18 in the background           |
 | `npm run db:down`        | Stop and remove the container, keeping the data |
-| `npm run db:migrate`     | Apply the Prisma migrations                     |
+| `npm run db:generate`    | Generate the Prisma client from the schema      |
+| `npm run db:migrate`     | Create/apply the Prisma migrations              |
 | `docker compose down -v` | Stop the container **and delete all data**      |
 
 #### Task
 
-Look at the Prisma schema, and understand how the ORM works ([docs](https://www.prisma.io/docs)).
+Read up on how the ORM works as you go ([Core concepts](https://www.prisma.io/docs/orm/core-concepts))
 
 1. Create your `.env` and start the database:
 
@@ -104,12 +114,23 @@ Look at the Prisma schema, and understand how the ORM works ([docs](https://www.
    The `DATABASE_URL` in `.env.example` already matches the container, so there
    is nothing to edit.
 
-2. Run the database migration
-3. Use Postman/ curl to test the endpoint
-4. Use a SQL select to check the test:
+2. Update the code to persist the game results in this database. You will need to:
+   1. Update the database schema in `contract.prisma`. Once you have done this, you will need to run
+
+   ```bash
+   npm run db:generate
+   npm run db:migrate
+   ```
+
+   `db:migrate` will ask you to name the migration (e.g. `init`) and will write
+   it to `prisma/migrations/`. Commit that folder — migrations are part of the
+   codebase.
+
+   2. Update the endpoint to insert data into the database.
+
+3. Use a SQL select to check the row really landed after finishing a game:
    1. I like to use the database UI within IntelliJ
    2. You can also use a tool like [PgAdmin](https://www.pgadmin.org/)
-5. Update `makeMove` to automatically upload wins/ draws
 
 #### Acceptance criteria
 
@@ -117,7 +138,7 @@ Look at the Prisma schema, and understand how the ORM works ([docs](https://www.
 
 ---
 
-### 5. Enable online multiplayer with Redis
+### Extra: Enable online multiplayer with Redis
 
 #### Background
 
@@ -145,5 +166,3 @@ Create an HLD to explain your proposed approach to your trainer
 - A player can create a game
 - Another player can join a game
 - Games can be played like normal
-- Stats only shows a list of played games
-- Code must be maintainable and extendable!

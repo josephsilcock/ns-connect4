@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GameSubmission } from "@/app/lib/database.types";
-import { prisma } from "@/app/lib/prisma";
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,14 +19,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const game = await prisma.game.create({
-      data: {
-        winner: body.winner,
-        loser: body.loser,
-      },
-    });
+    return NextResponse.json(
+      { error: "Database behaviour not implemented" },
+      { status: 500 },
+    );
 
-    return NextResponse.json({ id: game.id, success: true }, { status: 201 });
   } catch (error) {
     console.error("Error saving game:", error);
     const message = error instanceof Error ? error.message : "Unknown error";
