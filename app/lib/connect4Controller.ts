@@ -64,7 +64,6 @@ export class Connect4Controller {
 
   private checkWin(): boolean {
     for (let i = 0; i < this.height; i++) {
-      //Check horizontal
       for (let j = 0; j < this.width - 3; j++) {
         if (
           this.board[i][j] === this.currentPlayer &&
@@ -75,6 +74,46 @@ export class Connect4Controller {
           return true;
         }
       }
+    }
+
+    for (let i = 0; i < this.width; i++) {
+      for (let j = 0; j < this.height - 3; j++) {
+        if (
+          this.board[j][i] === this.currentPlayer &&
+          this.board[j + 1][i] === this.currentPlayer &&
+          this.board[j + 2][i] === this.currentPlayer &&
+          this.board[j + 3][i] === this.currentPlayer
+        ) {
+          return true;
+        }
+      }
+    }
+
+    for (let i = 0; i < this.height - 3; i++) {
+      for (let j = 0; j < this.width - 3; j++) {
+        if (
+          this.board[i][j] === this.currentPlayer &&
+          this.board[i + 1][j + 1] === this.currentPlayer &&
+          this.board[i + 2][j + 2] === this.currentPlayer &&
+          this.board[i + 3][j + 3] === this.currentPlayer
+        ) {
+          return true;
+        }
+      }
+    }
+
+    for (let i = 0; i < this.height - 3; i++) {
+      for (let j = 3; j < this.width; j++) {
+        if (
+          this.board[i][j] === this.currentPlayer &&
+          this.board[i + 1][j - 1] === this.currentPlayer &&
+          this.board[i + 2][j - 2] === this.currentPlayer &&
+          this.board[i + 3][j - 3] === this.currentPlayer
+        ) {
+          return true;
+        }
+      }
+    
     }
 
     return false;
