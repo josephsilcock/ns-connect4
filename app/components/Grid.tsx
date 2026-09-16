@@ -24,6 +24,9 @@ export default function Grid({ controller }: GridProps) {
     const newStatus = controller.makeMove(column);
     if (newStatus) {
       setGameStatus(newStatus);
+    } else {
+      console.log('Invalid move.')
+      alert('Invalid move, column full.')
     }
   };
 

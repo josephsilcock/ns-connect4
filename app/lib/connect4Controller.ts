@@ -25,11 +25,8 @@ export class Connect4Controller {
     return Array.from({ length: this.height }, () => Array(this.width).fill(0));
   }
 
-  private validMove(height: number, column: number): Boolean {
-    if (height === -1) {
-      return false;
-    }
-    if (this.board[height][column] === null) {
+  private validMove(height: number, column: number): boolean {
+    if (height === -1 || this.board[height][column] === null) {
       return false;
     }
     return true;
@@ -49,15 +46,14 @@ export class Connect4Controller {
     const maxHeight = this.getMaxHeight(column);
     if (this.validMove(maxHeight, column)) {
       this.board[maxHeight][column] = this.currentPlayer;
+      return this.getStatus();
     }
-    return this.getStatus();
+    return null;
   }
 
   public getMaxHeight(column: number): number {
-    const { board, state, winner, currentPlayer } = this.getStatus();
-
-    for (let row = board.length - 1; row >= 0; row--) {
-      if (board[row][column] === 0) {
+    for (let row = this.board.length - 1; row >= 0; row--) {
+      if (this.board[row][column] === 0) {
         return row;
       }
     }
