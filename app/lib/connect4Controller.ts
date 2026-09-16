@@ -32,6 +32,15 @@ export class Connect4Controller {
     return true;
   }
 
+  private getMaxHeight(column: number): number {
+    for (let row = this.board.length - 1; row >= 0; row--) {
+      if (this.board[row][column] === 0) {
+        return row;
+      }
+    }
+    return -1;
+  }
+
   public newGame(): GameStatus {
     this.board = this.initializeBoard();
     this.currentPlayer = 1;
@@ -49,15 +58,6 @@ export class Connect4Controller {
       return this.getStatus();
     }
     return null;
-  }
-
-  public getMaxHeight(column: number): number {
-    for (let row = this.board.length - 1; row >= 0; row--) {
-      if (this.board[row][column] === 0) {
-        return row;
-      }
-    }
-  return -1;
   }
 
   public getStatus(): GameStatus {
