@@ -22,7 +22,8 @@ describe("POST /api/games", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    process.env.DATABASE_URL = "postgresql://username:password@localhost:5432/connect4";
+    process.env.DATABASE_URL =
+      "postgresql://username:password@localhost:5432/connect4";
   });
 
   afterAll(() => {
@@ -87,7 +88,9 @@ describe("POST /api/games", () => {
   });
 
   it("returns 500 with the error message when prisma throws", async () => {
-    (prisma.games.create as jest.Mock).mockRejectedValue(new Error("connection refused"));
+    (prisma.games.create as jest.Mock).mockRejectedValue(
+      new Error("connection refused"),
+    );
 
     const response = await POST(makeRequest({ winner: 1, loser: 2 }));
 

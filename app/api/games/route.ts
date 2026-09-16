@@ -11,14 +11,11 @@ export async function POST(request: NextRequest) {
         { error: "Missing required fields" },
         { status: 400 },
       );
-    }
-    else if (body.winner === 1) {
+    } else if (body.winner === 1) {
       await prisma.games.create({ data: { playerOneWin: true } });
-    }
-    else if (body.winner === 2) {
+    } else if (body.winner === 2) {
       await prisma.games.create({ data: { playerTwoWin: true } });
-    }
-    else {
+    } else {
       await prisma.games.create({});
     }
 
@@ -29,9 +26,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json(
-      { status: 200 },
-    );
+    return NextResponse.json({ status: 200 });
   } catch (error) {
     console.error("Error saving game:", error);
     const message = error instanceof Error ? error.message : "Unknown error";
