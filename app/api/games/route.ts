@@ -6,6 +6,13 @@ export async function PostPlayerStatus(request: NextRequest) {
   try {
     const body: GameSubmission = await request.json();
 
+    if (!process.env.DATABASE_URL) {
+      return NextResponse.json(
+        { error: "Database not configured" },
+        { status: 500 },
+      );
+    }
+
     if (body.winner === undefined || body.loser === undefined) {
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -17,13 +24,6 @@ export async function PostPlayerStatus(request: NextRequest) {
       await prisma.games.create({ data: { playerTwoWin: true } });
     } else {
       await prisma.games.create({});
-    }
-
-    if (!process.env.DATABASE_URL) {
-      return NextResponse.json(
-        { error: "Database not configured" },
-        { status: 500 },
-      );
     }
 
     return NextResponse.json({ status: 200 });
