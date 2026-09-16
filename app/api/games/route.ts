@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { GameSubmission } from "@/app/lib/database.types";
 import { prisma } from "@/app/lib/prisma";
 
-export async function POST(request: NextRequest) {
+export async function PostPlayerStatus(request: NextRequest) {
   try {
     const body: GameSubmission = await request.json();
 
