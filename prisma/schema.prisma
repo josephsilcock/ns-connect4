@@ -5,3 +5,9 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Games {
+    id Int @id @default(autoincrement())
+    playerOneWin Boolean @default(false)
+    playerTwoWin Boolean @default(false)
+}

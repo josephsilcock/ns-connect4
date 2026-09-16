@@ -1,16 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GameSubmission } from "@/app/lib/database.types";
+import { prisma } from "@/app/lib/prisma";
 
 export async function POST(request: NextRequest) {
   try {
     const body: GameSubmission = await request.json();
-
-    if (body.winner === undefined || body.loser === undefined) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 },
-      );
-    }
 
     if (!process.env.DATABASE_URL) {
       return NextResponse.json(
@@ -19,11 +13,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json(
-      { error: "Database behaviour not implemented" },
-      { status: 500 },
-    );
+    if (body.winner === undefined || body.loser === undefined) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 },
+      );
+    } else if (body.winner === 1) {
+      await prisma.games.create({ data: { playerOneWin: true } });
+    } else if (body.winner === 2) {
+      await prisma.games.create({ data: { playerTwoWin: true } });
+    } else {
+      await prisma.games.create({});
+    }
 
+    return NextResponse.json({ status: 200 });
   } catch (error) {
     console.error("Error saving game:", error);
     const message = error instanceof Error ? error.message : "Unknown error";

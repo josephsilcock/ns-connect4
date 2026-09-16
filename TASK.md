@@ -78,7 +78,7 @@ We currently have a game, but no way of simply restarting it without refreshing 
 Finished games currently go nowhere. There is a `POST /api/games` endpoint in
 [`app/api/games/route.ts`](./app/api/games/route.ts), but it is not finished yet.
 
-We are using an ORM called [Prisma](https://www.prisma.io/docs) to work with the database. An ORM (Object-Relational 
+We are using an ORM called [Prisma](https://www.prisma.io/docs) to work with the database. An ORM (Object-Relational
 Mapping) is a tool that allows us to use the language we are coding in (in this case Typescript) to work with the database.
 This means we can separate raw SQL out of our code.
 
@@ -90,7 +90,7 @@ What is already provided for you:
   Docker volume so it survives restarts.
 - `app/lib/prisma.ts` — a Prisma client singleton, so Next's dev-mode hot
   reloading doesn't open a new connection pool on every edit.
-- `prisma/contract.prisma` — the Prisma schema, and the single source of truth
+- `prisma/schema.prisma` — the Prisma schema, and the single source of truth
   for your database. It currently declares only the datasource (PostgreSQL) and
   the client generator; the models describing your tables are yours to add.
 
@@ -117,7 +117,7 @@ Read up on how the ORM works as you go ([Core concepts](https://www.prisma.io/do
    is nothing to edit.
 
 2. Update the code to persist the game results in this database. You will need to:
-   1. Update the database schema in `contract.prisma`. Once you have done this, you will need to run
+   1. Update the database schema in `schema.prisma`. Once you have done this, you will need to run
 
    ```bash
    npm run db:generate
@@ -148,7 +148,7 @@ Below are some extra tasks. Pick and choose any that seem interesting to you.
 
 #### Background
 
-We have saved the game results in the database, but have no way of seeing them other than going into the database. Add 
+We have saved the game results in the database, but have no way of seeing them other than going into the database. Add
 a page for game statistics.
 
 #### Task
@@ -166,7 +166,7 @@ a page for game statistics.
 
 #### Background
 
-Games are currently recorded against player *numbers* — player 1 beat player 2.
+Games are currently recorded against player _numbers_ — player 1 beat player 2.
 That tells you nothing a week later, because player 1 is a different person
 every game. To make the stats page mean anything, we need to know who was
 actually playing.
@@ -182,7 +182,7 @@ The interesting decision is how to model this:
 1. Put the names straight on the game row as two strings — quick, but
    "Joe", "joe" and "Joe " become three different people, and renaming someone
    means rewriting every one of their games.
-2. Give players their own table and have each game *reference* two of them — a
+2. Give players their own table and have each game _reference_ two of them — a
    [relation](https://www.prisma.io/docs/orm/prisma-schema/data-model/relations).
    More schema work, but each player exists once and the database itself
    enforces that a game cannot point at a player who does not exist.
@@ -212,7 +212,7 @@ The controller keeps the board and nothing else, so the game has no memory of
 how it got there. A misclick is final, and a finished game leaves behind only a
 winner.
 
-If you instead keep the *list of moves*, the board stops being the source of
+If you instead keep the _list of moves_, the board stops being the source of
 truth and becomes something you derive from that list. That one change buys you
 undo, replay, and a game you can store far more interestingly in the database.
 
@@ -225,7 +225,7 @@ undo, replay, and a game you can store far more interestingly in the database.
 
 Things to think about:
 
-- Do you replay the whole history to rebuild the board, or keep the board *and*
+- Do you replay the whole history to rebuild the board, or keep the board _and_
   the history in step as you go? The first is harder to get wrong; the second is
   faster. Which matters at a 7x6 board?
 - Undo has to unwind the win/draw state too — taking back the winning move
