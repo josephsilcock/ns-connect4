@@ -56,6 +56,8 @@ export class Connect4Controller {
     const row = this.getLowestAvailablePosition(column);
     if (this.validMove(row, column)) {
       this.board[row][column] = this.currentPlayer;
+
+      if (this.checkWin()) this.gameState = "won";
       if (this.checkDraw()) this.gameState = "draw";
       return this.getStatus();
     }
@@ -113,7 +115,7 @@ export class Connect4Controller {
           return true;
         }
       }
-    
+
     }
 
     return false;
