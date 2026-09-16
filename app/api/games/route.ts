@@ -23,7 +23,6 @@ export async function POST(request: NextRequest) {
       { error: "Database behaviour not implemented" },
       { status: 500 },
     );
-
   } catch (error) {
     console.error("Error saving game:", error);
     const message = error instanceof Error ? error.message : "Unknown error";
