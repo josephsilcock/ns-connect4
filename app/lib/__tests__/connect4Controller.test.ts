@@ -41,7 +41,7 @@ describe("Connect4Controller", () => {
 
       status = controller.makeMove(0);
       expect(status).not.toBeNull();
-      expect(status?.board[0][0]).toBe(1 || 2);
+      expect(status?.board[0][0]).not.toBe(0);
     });
   });
 });
