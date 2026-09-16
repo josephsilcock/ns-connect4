@@ -90,7 +90,7 @@ What is already provided for you:
   Docker volume so it survives restarts.
 - `app/lib/prisma.ts` — a Prisma client singleton, so Next's dev-mode hot
   reloading doesn't open a new connection pool on every edit.
-- `prisma/contract.prisma` — the Prisma schema, and the single source of truth
+- `prisma/schema.prisma` — the Prisma schema, and the single source of truth
   for your database. It currently declares only the datasource (PostgreSQL) and
   the client generator; the models describing your tables are yours to add.
 
@@ -117,7 +117,7 @@ Read up on how the ORM works as you go ([Core concepts](https://www.prisma.io/do
    is nothing to edit.
 
 2. Update the code to persist the game results in this database. You will need to:
-   1. Update the database schema in `contract.prisma`. Once you have done this, you will need to run
+   1. Update the database schema in `schema.prisma`. Once you have done this, you will need to run
 
    ```bash
    npm run db:generate
