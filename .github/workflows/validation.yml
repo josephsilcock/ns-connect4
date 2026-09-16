@@ -26,6 +26,14 @@ jobs:
       - name: "Install Dependencies"
         run: npm ci --no-audit
 
+      # Prisma 7 has no install-time generate step, so the client must be
+      # generated explicitly. Generation reads the datasource URL from
+      # prisma.config.ts but never connects, so a placeholder is sufficient.
+      - name: "Generate Prisma Client"
+        run: npm run db:generate
+        env:
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
+
       - name: "Run Linter"
         run: npm run lint
 
