@@ -44,4 +44,17 @@ describe("Connect4Controller", () => {
       expect(status?.board[0][0]).not.toBe(0);
     });
   });
+  describe("checkDraw", () =>{
+    
+    it("should detect a draw when the board is full", () => {
+      const controller = new Connect4Controller(1, 1);
+      controller.newGame();
+    
+      const status = controller.makeMove(0);
+    
+      expect(status?.state).toBe("draw");
+      expect(status?.winner).toBeUndefined();
+    });
+    
+  })
 });
