@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { PostPlayerStatus } from "../route";
+import { POST } from "../route";
 import { prisma } from "@/app/lib/prisma";
 
 jest.mock("@/app/lib/prisma", () => ({
@@ -31,7 +31,7 @@ describe("POST /api/games", () => {
   });
 
   it("returns 400 when winner is missing", async () => {
-    const response = await PostPlayerStatus(makeRequest({ loser: 2 }));
+    const response = await POST(makeRequest({ loser: 2 }));
 
     expect(response.status).toBe(400);
     expect(await response.json()).toEqual({ error: "Missing required fields" });
@@ -39,7 +39,7 @@ describe("POST /api/games", () => {
   });
 
   it("returns 400 when loser is missing", async () => {
-    const response = await PostPlayerStatus(makeRequest({ winner: 1 }));
+    const response = await POST(makeRequest({ winner: 1 }));
 
     expect(response.status).toBe(400);
     expect(await response.json()).toEqual({ error: "Missing required fields" });
@@ -49,9 +49,7 @@ describe("POST /api/games", () => {
   it("records a playerOneWin when winner is 1", async () => {
     (prisma.games.create as jest.Mock).mockResolvedValue({});
 
-    const response = await PostPlayerStatus(
-      makeRequest({ winner: 1, loser: 2 }),
-    );
+    const response = await POST(makeRequest({ winner: 1, loser: 2 }));
 
     expect(prisma.games.create).toHaveBeenCalledWith({
       data: { playerOneWin: true },
@@ -62,9 +60,7 @@ describe("POST /api/games", () => {
   it("records a playerTwoWin when winner is 2", async () => {
     (prisma.games.create as jest.Mock).mockResolvedValue({});
 
-    const response = await PostPlayerStatus(
-      makeRequest({ winner: 2, loser: 1 }),
-    );
+    const response = await POST(makeRequest({ winner: 2, loser: 1 }));
 
     expect(prisma.games.create).toHaveBeenCalledWith({
       data: { playerTwoWin: true },
@@ -75,9 +71,7 @@ describe("POST /api/games", () => {
   it("records a game with no winner flags for any other winner value", async () => {
     (prisma.games.create as jest.Mock).mockResolvedValue({});
 
-    const response = await PostPlayerStatus(
-      makeRequest({ winner: 0, loser: 0 }),
-    );
+    const response = await POST(makeRequest({ winner: 0, loser: 0 }));
 
     expect(prisma.games.create).toHaveBeenCalledWith({});
     expect(response.status).toBe(200);
@@ -87,9 +81,7 @@ describe("POST /api/games", () => {
     delete process.env.DATABASE_URL;
     (prisma.games.create as jest.Mock).mockResolvedValue({});
 
-    const response = await PostPlayerStatus(
-      makeRequest({ winner: 1, loser: 2 }),
-    );
+    const response = await POST(makeRequest({ winner: 1, loser: 2 }));
 
     expect(response.status).toBe(500);
     expect(await response.json()).toEqual({ error: "Database not configured" });
@@ -100,9 +92,7 @@ describe("POST /api/games", () => {
       new Error("connection refused"),
     );
 
-    const response = await PostPlayerStatus(
-      makeRequest({ winner: 1, loser: 2 }),
-    );
+    const response = await POST(makeRequest({ winner: 1, loser: 2 }));
 
     expect(response.status).toBe(500);
     expect(await response.json()).toEqual({
