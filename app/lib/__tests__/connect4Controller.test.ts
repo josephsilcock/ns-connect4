@@ -32,17 +32,16 @@ describe("Connect4Controller", () => {
       expect(status).toBeNull();
     });
 
-    // Might need replacing
-    it("should allow a retry after placing it on a wrong place", () => {
+    it("should allow a retry after placing it in a filled column", () => {
       const controller = new Connect4Controller(1, 1);
       controller.newGame();
 
       let status = controller.makeMove(2);
       expect(status).toBeNull();
+
       status = controller.makeMove(0);
-      console.log(status);
       expect(status).not.toBeNull();
-      expect(status?.board[0][0]).toBe(1||2);
+      expect(status?.board[0][0]).toBe(1 || 2);
     });
   });
 });
