@@ -5,7 +5,10 @@ import Grid from "./components/Grid";
 import { Connect4Controller } from "./lib/connect4Controller";
 
 export default function Home() {
-  const controller: Connect4Controller = useMemo(() => new Connect4Controller(7, 6), []);
+  const controller: Connect4Controller = useMemo(
+    () => new Connect4Controller(7, 6),
+    [],
+  );
   const [gameKey, setGameKey] = useState(0);
 
   const handleRestart = () => {
