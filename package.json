@@ -5,9 +5,12 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "lint": "eslint && npx prettier -w .",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --cache --max-warnings 0 --fix",
+    "prettier": "npx prettier -w .",
     "test": "jest",
     "test:watch": "jest --watch",
+    "typecheck": "tsc",
     "db:up": "docker compose up -d",
     "db:down": "docker compose down",
     "db:generate": "prisma generate",

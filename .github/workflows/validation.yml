@@ -1,0 +1,36 @@
+name: Validation
+
+on:
+  workflow_call:
+  pull_request:
+  schedule:
+    - cron: "0 8 * * 2"
+
+permissions: {}
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98
+
+      - name: "Setup Node.js"
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: "Install Dependencies"
+        run: npm ci --no-audit
+
+      - name: "Run Linter"
+        run: npm run lint
+
+      - name: "Run Typecheck"
+        run: npm run typecheck
+
+      - name: "Run Unit Tests"
+        run: npm run test
