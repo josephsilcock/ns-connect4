@@ -62,6 +62,24 @@ export class Connect4Controller {
     return null;
   }
 
+  private checkWin(): boolean {
+    for (let i = 0; i < this.height; i++) {
+      //Check horizontal
+      for (let j = 0; j < this.width - 3; j++) {
+        if (
+          this.board[i][j] === this.currentPlayer &&
+          this.board[i][j + 1] === this.currentPlayer &&
+          this.board[i][j + 2] === this.currentPlayer &&
+          this.board[i][j + 3] === this.currentPlayer
+        ) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
   private checkDraw(): boolean {
     for (let i = 0; i < this.width; i++) {
       if (this.board[0][i] === 0) return false;
