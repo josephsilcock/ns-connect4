@@ -25,6 +25,16 @@ export class Connect4Controller {
     return Array.from({ length: this.height }, () => Array(this.width).fill(0));
   }
 
+  private validMove(height: number, column: number): Boolean {
+    if (height === -1) {
+      return false;
+    }
+    if (this.board[height][column] === null) {
+      return false;
+    }
+    return true;
+  }
+
   public newGame(): GameStatus {
     this.board = this.initializeBoard();
     this.currentPlayer = 1;
@@ -36,9 +46,22 @@ export class Connect4Controller {
     console.log("Dropping a token into a column:", column);
 
     // This method needs to be implemented!
-    this.board[0][column] = this.currentPlayer;
-
+    const maxHeight = this.getMaxHeight(column);
+    if (this.validMove(maxHeight, column)) {
+      this.board[maxHeight][column] = this.currentPlayer;
+    }
     return this.getStatus();
+  }
+
+  public getMaxHeight(column: number): number {
+    const { board, state, winner, currentPlayer } = this.getStatus();
+
+    for (let row = board.length - 1; row >= 0; row--) {
+      if (board[row][column] === 0) {
+        return row;
+      }
+    }
+  return -1;
   }
 
   public getStatus(): GameStatus {
