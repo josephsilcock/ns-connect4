@@ -45,29 +45,36 @@ export default function Grid({ controller }: GridProps) {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="text-lg font-semibold">{getStatusMessage()}</div>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(${controller.width}, minmax(0, 1fr))`,
-        }}
-      >
-        {gameStatus.board.map((row, rowIndex) =>
-          row.map((cell, colIndex) => (
-            <button
-              key={`${rowIndex}-${colIndex}`}
-              className="aspect-square w-10 h-10 border-1 border-gray-300 dark:border-gray-700 transition-colors"
-              onClick={() => handleColumnClick(colIndex)}
-            >
-              <div
-                className="w-full h-full rounded-full"
-                style={{
-                  backgroundColor: PIECE_COLOURS[cell],
-                }}
-              />
-            </button>
-          )),
-        )}
+      <div>
+        {(gameStatus.state === "won" || gameStatus.state === "draw") ? (
+          <div>Show some react component</div>
+        ) :
+            <div>
+                <div className="text-lg font-semibold">{getStatusMessage()}</div>
+                <div
+                    style={{
+                        display: "grid",
+                        gridTemplateColumns: `repeat(${controller.width}, minmax(0, 1fr))`,
+                    }}
+                >
+                    {gameStatus.board.map((row, rowIndex) =>
+                        row.map((cell, colIndex) => (
+                            <button
+                                key={`${rowIndex}-${colIndex}`}
+                                className="aspect-square w-10 h-10 border-1 border-gray-300 dark:border-gray-700 transition-colors"
+                                onClick={() => handleColumnClick(colIndex)}
+                            >
+                            <div
+                                className="w-full h-full rounded-full"
+                                style={{
+                                    backgroundColor: PIECE_COLOURS[cell],
+                                }}
+                            />
+                            </button>
+                        )),
+                    )}
+                </div>
+            </div>}
       </div>
     </div>
   );
