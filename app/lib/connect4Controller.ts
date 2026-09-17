@@ -119,6 +119,16 @@ export class Connect4Controller {
     return true;
   }
 
+  public getValidColumns(): number[] {
+    const columns: number[] = [];
+    for (let column = 0; column < this.width; column++) {
+      if (this.getLowestAvailablePosition(column) !== -1) {
+        columns.push(column);
+      }
+    }
+    return columns;
+  }
+
   public getStatus(): GameStatus {
     return {
       board: this.board,

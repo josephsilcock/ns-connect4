@@ -247,6 +247,33 @@ describe("Connect4Controller", () => {
     });
   });
 
+  describe("getValidColumns", () => {
+    it("should list every column when the board is empty", () => {
+      const controller = new Connect4Controller(3, 2);
+      controller.newGame();
+
+      expect(controller.getValidColumns()).toEqual([0, 1, 2]);
+    });
+
+    it("should exclude columns that are full", () => {
+      const controller = new Connect4Controller(3, 1);
+      controller.newGame();
+
+      controller.makeMove(1);
+
+      expect(controller.getValidColumns()).toEqual([0, 2]);
+    });
+
+    it("should be empty when the board is completely full", () => {
+      const controller = new Connect4Controller(1, 1);
+      controller.newGame();
+
+      controller.makeMove(0);
+
+      expect(controller.getValidColumns()).toEqual([]);
+    });
+  });
+
   describe("newGame", () => {
     it("should clear every placed piece when restarting a game in progress", () => {
       const controller = new Connect4Controller(7, 6);
