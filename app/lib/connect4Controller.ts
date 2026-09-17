@@ -50,15 +50,29 @@ export class Connect4Controller {
   }
 
   public makeMove(column: number): GameStatus | null {
+    if (this.gameState !== "ongoing") {
+      return null; // Game has not started, or is already over.
+    }
+
     const row = this.getLowestAvailablePosition(column);
     if (this.validMove(row, column)) {
       this.board[row][column] = this.currentPlayer;
-
-      if (this.checkDraw()) this.gameState = "draw";
       if (this.checkWin()) this.gameState = "won";
+      else if (this.checkDraw()) this.gameState = "draw";
+      else this.changePlayer();
+
       return this.getStatus();
     }
     return null;
+  }
+
+  private changePlayer(): GameStatus | null {
+    if (this.getStatus().currentPlayer == 1) {
+      this.currentPlayer = 2;
+    } else {
+      this.currentPlayer = 1;
+    }
+    return this.getStatus();
   }
 
   private checkWin(): boolean {
