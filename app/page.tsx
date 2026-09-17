@@ -37,23 +37,25 @@ export default function Home() {
           computerPlayer={vsComputer ? 2 : undefined}
         />
         <div className="flex flex-col items-center gap-4">
-            <button
-              type="button"
-              role="switch"
-              aria-checked={vsComputer}
-              onClick={() => setVsComputer((on) => !on)}
-              className={`relative h-8 w-14 shrink-0 rounded-full transition-colors ${
-                vsComputer ? "bg-black dark:bg-zinc-50" : "bg-zinc-300 dark:bg-zinc-700"
+          <button
+            type="button"
+            role="switch"
+            aria-checked={vsComputer}
+            onClick={() => setVsComputer((on) => !on)}
+            className={`relative h-8 w-14 shrink-0 rounded-full transition-colors ${
+              vsComputer
+                ? "bg-black dark:bg-zinc-50"
+                : "bg-zinc-300 dark:bg-zinc-700"
+            }`}
+          >
+            <span
+              className={`absolute top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white text-sm shadow transition-transform dark:bg-black ${
+                vsComputer ? "translate-x-7" : "translate-x-1"
               }`}
             >
-              <span
-                className={`absolute top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white text-sm shadow transition-transform dark:bg-black ${
-                  vsComputer ? "translate-x-7" : "translate-x-1"
-                }`}
-              >
-                🤖
-              </span>
-            </button>
+              🤖
+            </span>
+          </button>
           <button
             type="button"
             onClick={handleRestart}
