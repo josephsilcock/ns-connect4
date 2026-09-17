@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { Connect4Controller, GameStatus } from "../lib/connect4Controller";
+import { Connect4Controller, Player } from "../lib/connect4Controller";
+import { useConnect4Game } from "../hooks/useConnect4Game";
+import { Opponent } from "../lib/opponents/opponent";
 
 type GridProps = {
   controller: Connect4Controller;
+  computerPlayer?: Player;
+  opponent?: Opponent;
 };
 
 const PIECE_COLOURS = {
@@ -13,18 +16,23 @@ const PIECE_COLOURS = {
   2: "rgb(234, 179, 8)",
 };
 
-export default function Grid({ controller }: GridProps) {
-  const [gameStatus, setGameStatus] = useState<GameStatus>(() =>
-    controller.newGame(),
+export default function Grid({
+  controller,
+  computerPlayer,
+  opponent,
+}: GridProps) {
+  const { gameStatus, isComputerTurn, playColumn } = useConnect4Game(
+    controller,
+    { computerPlayer, opponent },
   );
 
   const handleColumnClick = (column: number) => {
-    if (gameStatus.state !== "ongoing") return;
+    if (gameStatus.state !== "ongoing" || isComputerTurn) {
+      return;
+    }
 
-    const newStatus = controller.makeMove(column);
-    if (newStatus) {
-      setGameStatus(newStatus);
-    } else {
+    const newStatus = playColumn(column);
+    if (!newStatus) {
       console.log("Invalid move.");
       alert("Invalid move, column full.");
     }
@@ -35,7 +43,9 @@ export default function Grid({ controller }: GridProps) {
       case "idle":
         return "Game not started";
       case "ongoing":
-        return `Player ${gameStatus.currentPlayer}'s turn`;
+        return isComputerTurn
+          ? "Computer is thinking..."
+          : `Player ${gameStatus.currentPlayer}'s turn`;
       case "won":
         return `Player ${gameStatus.winner} wins!`;
       case "draw":
@@ -58,6 +68,7 @@ export default function Grid({ controller }: GridProps) {
               key={`${rowIndex}-${colIndex}`}
               className="aspect-square w-10 h-10 border-1 border-gray-300 dark:border-gray-700 transition-colors"
               onClick={() => handleColumnClick(colIndex)}
+              disabled={isComputerTurn}
             >
               <div
                 className="w-full h-full rounded-full"
