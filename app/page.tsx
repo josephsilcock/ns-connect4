@@ -16,6 +16,14 @@ export default function Home() {
     setGameKey((key) => key + 1);
   };
 
+  const handleLoadGame = () => {
+
+  };
+
+  const handleSaveGame = () => {
+
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main className="flex min-h-screen w-full max-w-3xl flex-col items-center gap-12 py-32 px-16 bg-white dark:bg-black">
@@ -28,13 +36,29 @@ export default function Home() {
           </p>
         </div>
         <Grid key={gameKey} controller={controller} />
-        <button
-          type="button"
-          onClick={handleRestart}
-          className="rounded-full bg-black px-6 py-2 text-sm font-semibold text-zinc-50 transition-colors hover:bg-zinc-700 dark:bg-zinc-50 dark:text-black dark:hover:bg-zinc-300"
-        >
-          Restart game
-        </button>
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          <button
+            type="button"
+            onClick={handleSaveGame}
+            className="rounded-full bg-black px-6 py-2 text-sm font-semibold text-zinc-50 transition-colors hover:bg-zinc-700 dark:bg-zinc-50 dark:text-black dark:hover:bg-zinc-300"
+          >
+            Save game
+          </button>
+          <button
+            type="button"
+            onClick={handleLoadGame}
+            className="rounded-full bg-black px-6 py-2 text-sm font-semibold text-zinc-50 transition-colors hover:bg-zinc-700 dark:bg-zinc-50 dark:text-black dark:hover:bg-zinc-300"
+          >
+            Load game
+          </button>
+          <button
+            type="button"
+            onClick={handleRestart}
+            className="rounded-full bg-black px-6 py-2 text-sm font-semibold text-zinc-50 transition-colors hover:bg-zinc-700 dark:bg-zinc-50 dark:text-black dark:hover:bg-zinc-300"
+          >
+            Restart game
+          </button>
+        </div>
       </main>
     </div>
   );
