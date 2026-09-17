@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Connect4Controller, GameStatus } from "../lib/connect4Controller";
+import GameOver from "./GameOver";
 
 type GridProps = {
   controller: Connect4Controller;
@@ -47,7 +48,11 @@ export default function Grid({ controller }: GridProps) {
     <div className="flex flex-col items-center gap-4">
       <div>
         {(gameStatus.state === "won" || gameStatus.state === "draw") ? (
-          <div>Show some react component</div>
+          <GameOver
+              gameState={gameStatus.state}
+              winner={gameStatus.winner}
+              onRestart={() => console.log("restart")}
+          />
         ) :
             <div>
                 <div className="text-lg font-semibold">{getStatusMessage()}</div>
