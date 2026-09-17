@@ -1,7 +1,8 @@
 "use client";
 
-import {useState} from "react";
+import { useEffect, useRef, useState } from "react";
 import { Connect4Controller, GameStatus } from "../lib/connect4Controller";
+import { GameSubmission } from "../lib/database.types";
 import GameOver from "./GameOver";
 
 type GridProps = {
@@ -18,6 +19,32 @@ export default function Grid({ controller }: GridProps) {
   const [gameStatus, setGameStatus] = useState<GameStatus>(() =>
     controller.newGame(),
   );
+  const hasReportedResult = useRef(false);
+
+  useEffect(() => {
+    if (hasReportedResult.current) return;
+    if (gameStatus.state !== "won" && gameStatus.state !== "draw") return;
+
+    hasReportedResult.current = true;
+
+    const result: GameSubmission =
+      gameStatus.state === "won"
+        ? { winner: gameStatus.winner!, loser: gameStatus.winner === 1 ? 2 : 1 }
+        : { winner: 0, loser: 0 };
+
+    fetch("/api/games", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(result),
+    }).then(async (response) => {
+      if (!response.ok) {
+        const { error } = await response.json();
+        console.error("Failed to record game result:", error);
+      }
+    }).catch((error) => {
+      console.error("Failed to record game result:", error);
+    });
+  }, [gameStatus]);
 
   const handleColumnClick = (column: number) => {
     if (gameStatus.state !== "ongoing") return;
