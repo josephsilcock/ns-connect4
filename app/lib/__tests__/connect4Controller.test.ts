@@ -54,6 +54,8 @@ describe("Connect4Controller", () => {
 
       expect(status?.state).toBe("draw");
       expect(status?.winner).toBeUndefined();
+    });
+  });
 
   describe("newGame", () => {
     it("should clear every placed piece when restarting a game in progress", () => {
