@@ -1,6 +1,7 @@
 type GameOverProps = {
   gameState: "won" | "draw";
   winner: number | undefined;
+  winnerName: string;
 };
 
 const WINNER_COLOURS: Record<number, string> = {
@@ -8,14 +9,17 @@ const WINNER_COLOURS: Record<number, string> = {
   2: "text-yellow-500",
 };
 
-export default function GameOver({ gameState, winner }: GameOverProps) {
+export default function GameOver({
+  gameState,
+  winner,
+  winnerName,
+}: GameOverProps) {
   return (
     <div className="flex flex-col items-center gap-4 p-8">
       <div className="text-2xl font-bold">
         {gameState === "won" && winner !== undefined ? (
           <>
-            Player <span className={WINNER_COLOURS[winner]}>{winner}</span>{" "}
-            wins!
+            <span className={WINNER_COLOURS[winner]}>{winnerName}</span> wins!
           </>
         ) : (
           "Draw!"

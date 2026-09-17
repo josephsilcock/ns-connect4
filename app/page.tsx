@@ -22,7 +22,9 @@ export default function Home() {
   };
 
   const displayPlayerOneName = playerOneName.trim() || "Player 1";
-  const displayPlayerTwoName = playerTwoName.trim() || "Player 2";
+  const displayPlayerTwoName = vsComputer
+    ? "Computer"
+    : playerTwoName.trim() || "Player 2";
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
@@ -35,11 +37,37 @@ export default function Home() {
             A very complex Connect 4 game
           </p>
         </div>
+        <div className="flex w-full max-w-md flex-col gap-4 sm:flex-row">
+          <label className="flex flex-1 flex-col gap-1 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            Player 1 name
+            <input
+              type="text"
+              value={playerOneName}
+              onChange={(event) => setPlayerOneName(event.target.value)}
+              placeholder="Player 1"
+              className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-black dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-zinc-50"
+            />
+          </label>
+          {!vsComputer && (
+            <label className="flex flex-1 flex-col gap-1 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              Player 2 name
+              <input
+                type="text"
+                value={playerTwoName}
+                onChange={(event) => setPlayerTwoName(event.target.value)}
+                placeholder="Player 2"
+                className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-black dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-zinc-50"
+              />
+            </label>
+          )}
+        </div>
         <Grid
           key={gameKey}
           controller={controller}
           opponent={vsComputer ? opponent : undefined}
           computerPlayer={vsComputer ? 2 : undefined}
+          playerOneName={displayPlayerOneName}
+          playerTwoName={displayPlayerTwoName}
         />
         <div className="flex flex-col items-center gap-4">
           <button
