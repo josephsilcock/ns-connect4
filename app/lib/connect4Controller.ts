@@ -1,3 +1,5 @@
+import { getLowestAvailableRow, wouldWinAt } from "./connect4Rules";
+
 export type GameState = "ongoing" | "won" | "draw" | "idle";
 export type Player = 0 | 1 | 2; // 0 = empty, 1 = player 1, 2 = player 2
 
@@ -33,15 +35,6 @@ export class Connect4Controller {
     // Column filled or position does not exist.
   }
 
-  private getLowestAvailablePosition(column: number): number {
-    for (let row = this.board.length - 1; row >= 0; row--) {
-      if (this.board[row][column] === 0) {
-        return row;
-      }
-    }
-    return -1; // Column is filled.
-  }
-
   public newGame(): GameStatus {
     this.board = this.initializeBoard();
     this.currentPlayer = 1;
@@ -54,10 +47,11 @@ export class Connect4Controller {
       return null; // Game has not started, or is already over.
     }
 
-    const row = this.getLowestAvailablePosition(column);
+    const row = getLowestAvailableRow(this.board, column);
     if (this.validMove(row, column)) {
       this.board[row][column] = this.currentPlayer;
-      if (this.checkWin()) this.gameState = "won";
+      if (wouldWinAt(this.board, row, column, this.currentPlayer))
+        this.gameState = "won";
       else if (this.checkDraw()) this.gameState = "draw";
       else this.changePlayer();
 
@@ -75,43 +69,6 @@ export class Connect4Controller {
     return this.getStatus();
   }
 
-  private checkWin(): boolean {
-    const offsets = [
-      [0, 1], // horizontal
-      [1, 0], // vertical
-      [1, 1], // diagonal down-right
-      [1, -1], // diagonal down-left
-    ];
-
-    const hasFourInDirection = (
-      row: number,
-      column: number,
-      deltaRow: number,
-      deltaColumn: number,
-    ): boolean => {
-      for (let step = 0; step < 4; step++) {
-        const r = row + deltaRow * step;
-        const c = column + deltaColumn * step;
-        if (this.board[r]?.[c] !== this.currentPlayer) {
-          return false;
-        }
-      }
-      return true;
-    };
-
-    for (let row = 0; row < this.height; row++) {
-      for (let column = 0; column < this.width; column++) {
-        for (const [deltaRow, deltaColumn] of offsets) {
-          if (hasFourInDirection(row, column, deltaRow, deltaColumn)) {
-            return true;
-          }
-        }
-      }
-    }
-
-    return false;
-  }
-
   private checkDraw(): boolean {
     for (let i = 0; i < this.width; i++) {
       if (this.board[0][i] === 0) return false;
@@ -122,7 +79,7 @@ export class Connect4Controller {
   public getValidColumns(): number[] {
     const columns: number[] = [];
     for (let column = 0; column < this.width; column++) {
-      if (this.getLowestAvailablePosition(column) !== -1) {
+      if (getLowestAvailableRow(this.board, column) !== -1) {
         columns.push(column);
       }
     }

@@ -3,14 +3,14 @@
 import { useMemo, useState } from "react";
 import Grid from "./components/Grid";
 import { Connect4Controller } from "./lib/connect4Controller";
-import { RandomOpponent } from "@/app/lib/opponents/randomOpponent";
+import { BlockingOpponent } from "@/app/lib/opponents/blockingOpponent";
 
 export default function Home() {
   const controller: Connect4Controller = useMemo(
     () => new Connect4Controller(7, 6),
     [],
   );
-  const opponent = useMemo(() => new RandomOpponent(), []);
+  const opponent = useMemo(() => new BlockingOpponent(), []);
   const [gameKey, setGameKey] = useState(0);
   const [vsComputer, setVsComputer] = useState(true);
 

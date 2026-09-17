@@ -5,7 +5,7 @@ describe("RandomOpponent", () => {
     const opponent = new RandomOpponent();
     const validColumns = [1, 3, 5];
 
-    const column = await opponent.chooseMove([[0]], validColumns);
+    const column = await opponent.chooseMove([[0]], 1, validColumns);
 
     expect(validColumns).toContain(column);
   });
@@ -13,7 +13,7 @@ describe("RandomOpponent", () => {
   it("should choose the only column when just one is valid", async () => {
     const opponent = new RandomOpponent();
 
-    const column = await opponent.chooseMove([[0]], [4]);
+    const column = await opponent.chooseMove([[0]], 1, [4]);
 
     expect(column).toBe(4);
   });
@@ -22,7 +22,7 @@ describe("RandomOpponent", () => {
     const opponent = new RandomOpponent();
     jest.spyOn(Math, "random").mockReturnValue(0.5);
 
-    const column = await opponent.chooseMove([[0]], [1, 3, 5, 6]);
+    const column = await opponent.chooseMove([[0]], 1, [1, 3, 5, 6]);
 
     expect(column).toBe(5);
 
