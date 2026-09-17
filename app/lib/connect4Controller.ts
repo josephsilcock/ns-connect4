@@ -54,8 +54,8 @@ export class Connect4Controller {
     if (this.validMove(row, column)) {
       this.board[row][column] = this.currentPlayer;
 
-      if (this.checkWin()) this.gameState = "won";
       if (this.checkDraw()) this.gameState = "draw";
+      if (this.checkWin()) this.gameState = "won";
       return this.getStatus();
     }
     return null;
@@ -93,7 +93,6 @@ export class Connect4Controller {
           }
         }
       }
-
     }
 
     return false;
