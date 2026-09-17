@@ -4,6 +4,7 @@ import { Opponent } from "./opponent";
 export class RandomOpponent implements Opponent {
   async chooseMove(
     _board: Player[][],
+    _currentPlayer: Player,
     validColumns: number[],
   ): Promise<number> {
     const index = Math.floor(Math.random() * validColumns.length);

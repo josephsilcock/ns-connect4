@@ -31,7 +31,11 @@ export function useConnect4Game(
     let cancelled = false;
 
     opponent
-      .chooseMove(gameStatus.board, controller.getValidColumns())
+      .chooseMove(
+        gameStatus.board,
+        gameStatus.currentPlayer,
+        controller.getValidColumns(),
+      )
       .then((column) => {
         if (cancelled) return;
         const newStatus = controller.makeMove(column);

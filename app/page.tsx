@@ -1,6 +1,24 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import Grid from "./components/Grid";
+import { Connect4Controller } from "./lib/connect4Controller";
+import { BlockingOpponent } from "@/app/lib/opponents/blockingOpponent";
 import Game from "./components/Game";
 
 export default function Home() {
+  const controller: Connect4Controller = useMemo(
+    () => new Connect4Controller(7, 6),
+    [],
+  );
+  const opponent = useMemo(() => new BlockingOpponent(), []);
+  const [gameKey, setGameKey] = useState(0);
+  const [vsComputer, setVsComputer] = useState(true);
+
+  const handleRestart = () => {
+    controller.newGame();
+    setGameKey((key) => key + 1);
+  };
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main className="flex min-h-screen w-full max-w-3xl flex-col items-center gap-12 py-32 px-16 bg-white dark:bg-black">
