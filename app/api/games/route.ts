@@ -36,3 +36,27 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
+export async function GET() {
+  try {
+    if (!process.env.DATABASE_URL) {
+      return NextResponse.json(
+        { error: "Database not configured" },
+        { status: 500 },
+      );
+    }
+
+    const games = await prisma.games.findMany({
+      orderBy: { id: "desc" },
+    });
+
+    return NextResponse.json({ games });
+  } catch (error) {
+    console.error("Error fetching games:", error);
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json(
+      { error: `Failed to fetch games: ${message}` },
+      { status: 500 },
+    );
+  }
+}
