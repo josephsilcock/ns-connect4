@@ -3,12 +3,14 @@
 import { useMemo, useState } from "react";
 import Grid from "./components/Grid";
 import { Connect4Controller } from "./lib/connect4Controller";
+import { RandomOpponent } from "@/app/lib/opponents/randomOpponent";
 
 export default function Home() {
   const controller: Connect4Controller = useMemo(
     () => new Connect4Controller(7, 6),
     [],
   );
+  const opponent = useMemo(() => new RandomOpponent(), []);
   const [gameKey, setGameKey] = useState(0);
 
   const handleRestart = () => {
@@ -27,7 +29,12 @@ export default function Home() {
             A very complex Connect 4 game
           </p>
         </div>
-        <Grid key={gameKey} controller={controller} />
+        <Grid
+          key={gameKey}
+          controller={controller}
+          opponent={opponent}
+          computerPlayer={2}
+        />
         <button
           type="button"
           onClick={handleRestart}
