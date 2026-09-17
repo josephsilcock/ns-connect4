@@ -57,6 +57,7 @@ export class Connect4Controller {
     if (this.validMove(row, column)) {
       this.board[row][column] = this.currentPlayer;
       this.changePlayer();
+      if (this.checkDraw()) this.gameState = "draw";
       return this.getStatus();
     }
     return null;
@@ -69,6 +70,11 @@ export class Connect4Controller {
       this.currentPlayer = 1;
     }
     return this.getStatus();
+  private checkDraw(): boolean {
+    for (let i = 0; i < this.width; i++) {
+      if (this.board[0][i] === 0) return false;
+    }
+    return true;
   }
 
   public getStatus(): GameStatus {
