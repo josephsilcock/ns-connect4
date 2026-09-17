@@ -57,8 +57,9 @@ export class Connect4Controller {
     const row = this.getLowestAvailablePosition(column);
     if (this.validMove(row, column)) {
       this.board[row][column] = this.currentPlayer;
-      if (this.checkWin()) this.gameState = "won";
-      else if (this.checkDraw()) this.gameState = "draw";
+      if (this.checkWin()) {
+        this.gameState = "won";
+      } else if (this.checkDraw()) this.gameState = "draw";
       else this.changePlayer();
 
       return this.getStatus();
@@ -117,6 +118,16 @@ export class Connect4Controller {
       if (this.board[0][i] === 0) return false;
     }
     return true;
+  }
+
+  public getValidColumns(): number[] {
+    const columns: number[] = [];
+    for (let column = 0; column < this.width; column++) {
+      if (this.getLowestAvailablePosition(column) !== -1) {
+        columns.push(column);
+      }
+    }
+    return columns;
   }
 
   public getStatus(): GameStatus {

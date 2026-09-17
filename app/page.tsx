@@ -1,3 +1,8 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import Grid from "./components/Grid";
+import { Connect4Controller } from "./lib/connect4Controller";
 import Game from "./components/Game";
 
 export default function Home() {

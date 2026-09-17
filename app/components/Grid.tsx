@@ -1,30 +1,67 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Connect4Controller,
-  GameStatus,
-  Player,
-} from "../lib/connect4Controller";
+import { Connect4Controller, GameStatus, Player } from "../lib/connect4Controller";
+import { GameSubmission } from "../lib/database.types";
+import GameOver from "./GameOver";
+import { useConnect4Game } from "../hooks/useConnect4Game";
+import { Opponent } from "../lib/opponents/opponent";
 
 type GridProps = {
   controller: Connect4Controller;
+  computerPlayer?: Player;
+  opponent?: Opponent;
   /** Piece colour per player. Index 0 is the empty cell. */
   colours: Record<Player, string>;
 };
 
-export default function Grid({ controller, colours }: GridProps) {
-  const [gameStatus, setGameStatus] = useState<GameStatus>(() =>
-    controller.newGame(),
+export default function Grid({
+  controller,
+  computerPlayer,
+  opponent,
+  colours,
+}: GridProps) {
+  const { gameStatus, isComputerTurn, playColumn } = useConnect4Game(
+    controller,
+    { computerPlayer, opponent },
   );
+  const hasReportedResult = useRef(false);
+
+  useEffect(() => {
+    if (hasReportedResult.current) return;
+    if (gameStatus.state !== "won" && gameStatus.state !== "draw") return;
+
+    hasReportedResult.current = true;
+
+    const result: GameSubmission =
+      gameStatus.state === "won"
+        ? { winner: gameStatus.winner!, loser: gameStatus.winner === 1 ? 2 : 1 }
+        : { winner: 0, loser: 0 };
+
+    fetch("/api/games", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(result),
+    })
+      .then(async (response) => {
+        console.log("Got response", response);
+        if (!response.ok) {
+          const { error } = await response.json();
+          console.error("Failed to record game result:", error);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to record game result:", error);
+      });
+  }, [gameStatus]);
 
   const handleColumnClick = (column: number) => {
-    if (gameStatus.state !== "ongoing") return;
+    if (gameStatus.state !== "ongoing" || isComputerTurn) {
+      return;
+    }
 
-    const newStatus = controller.makeMove(column);
-    if (newStatus) {
-      setGameStatus(newStatus);
-    } else {
+    const newStatus = playColumn(column);
+    if (!newStatus) {
       console.log("Invalid move.");
       alert("Invalid move, column full.");
     }
@@ -35,7 +72,9 @@ export default function Grid({ controller, colours }: GridProps) {
       case "idle":
         return "Game not started";
       case "ongoing":
-        return `Player ${gameStatus.currentPlayer}'s turn`;
+        return isComputerTurn
+          ? "Computer is thinking..."
+          : `Player ${gameStatus.currentPlayer}'s turn`;
       case "won":
         return `Player ${gameStatus.winner} wins!`;
       case "draw":
@@ -56,7 +95,12 @@ export default function Grid({ controller, colours }: GridProps) {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="flex items-center gap-2 text-lg font-semibold">
+      <div>
+        {gameStatus.state === "won" || gameStatus.state === "draw" ? (
+          <GameOver gameState={gameStatus.state} winner={gameStatus.winner} />
+        ) : (
+          <div>
+            <div className="flex items-center gap-2 text-lg font-semibold">
         {statusColour && (
           <span
             aria-hidden
@@ -66,27 +110,31 @@ export default function Grid({ controller, colours }: GridProps) {
         )}
         {getStatusMessage()}
       </div>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(${controller.width}, minmax(0, 1fr))`,
-        }}
-      >
-        {gameStatus.board.map((row, rowIndex) =>
-          row.map((cell, colIndex) => (
-            <button
-              key={`${rowIndex}-${colIndex}`}
-              className="aspect-square w-10 h-10 border-1 border-gray-300 dark:border-gray-700 transition-colors"
-              onClick={() => handleColumnClick(colIndex)}
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: `repeat(${controller.width}, minmax(0, 1fr))`,
+              }}
             >
-              <div
-                className="w-full h-full rounded-full"
-                style={{
-                  backgroundColor: colours[cell],
-                }}
-              />
-            </button>
-          )),
+              {gameStatus.board.map((row, rowIndex) =>
+                row.map((cell, colIndex) => (
+                  <button
+                    key={`${rowIndex}-${colIndex}`}
+                    className="aspect-square w-10 h-10 border-1 border-gray-300 dark:border-gray-700 transition-colors"
+                    onClick={() => handleColumnClick(colIndex)}
+                    disabled={isComputerTurn}
+                  >
+                    <div
+                      className="w-full h-full rounded-full"
+                      style={{
+                        backgroundColor: colours[cell],
+                      }}
+                    />
+                  </button>
+                )),
+              )}
+            </div>
+          </div>
         )}
       </div>
     </div>
