@@ -13,11 +13,16 @@ export default function Home() {
   const opponent = useMemo(() => new RandomOpponent(), []);
   const [gameKey, setGameKey] = useState(0);
   const [vsComputer, setVsComputer] = useState(true);
+  const [playerOneName, setPlayerOneName] = useState("");
+  const [playerTwoName, setPlayerTwoName] = useState("");
 
   const handleRestart = () => {
     controller.newGame();
     setGameKey((key) => key + 1);
   };
+
+  const displayPlayerOneName = playerOneName.trim() || "Player 1";
+  const displayPlayerTwoName = playerTwoName.trim() || "Player 2";
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">

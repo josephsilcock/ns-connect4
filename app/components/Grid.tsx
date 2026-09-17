@@ -1,16 +1,14 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { Connect4Controller, Player } from "../lib/connect4Controller";
+import { useEffect, useRef, useState } from "react";
 import { GameSubmission } from "../lib/database.types";
 import GameOver from "./GameOver";
+import { Connect4Controller, GameStatus, Player } from "../lib/connect4Controller";
 import { useConnect4Game } from "../hooks/useConnect4Game";
 import { Opponent } from "../lib/opponents/opponent";
 
 type GridProps = {
   controller: Connect4Controller;
-  computerPlayer?: Player;
-  opponent?: Opponent;
 };
 
 const PIECE_COLOURS = {
@@ -23,6 +21,8 @@ export default function Grid({
   controller,
   computerPlayer,
   opponent,
+  playerOneName
+  playerTwoName
 }: GridProps) {
   const { gameStatus, isComputerTurn, playColumn } = useConnect4Game(
     controller,
@@ -58,6 +58,9 @@ export default function Grid({
       });
   }, [gameStatus]);
 
+  const getPlayerName = (player: Player) =>
+    player === 1 ? playerOneName : playerTwoName;
+
   const handleColumnClick = (column: number) => {
     if (gameStatus.state !== "ongoing" || isComputerTurn) {
       return;
@@ -77,9 +80,9 @@ export default function Grid({
       case "ongoing":
         return isComputerTurn
           ? "Computer is thinking..."
-          : `Player ${gameStatus.currentPlayer}'s turn`;
+        : `${getPlayerName(gameStatus.currentPlayer)}'s turn`;
       case "won":
-        return `Player ${gameStatus.winner} wins!`;
+        return `${getPlayerName(gameStatus.winner!)} wins!`;
       case "draw":
         return "Draw!";
     }
