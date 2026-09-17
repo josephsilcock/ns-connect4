@@ -11,3 +11,11 @@ model Games {
     playerOneWin Boolean @default(false)
     playerTwoWin Boolean @default(false)
 }
+
+model GameStatus {
+    id Int @id @default(autoincrement())
+    board Json
+    state String
+    currentPlayer Int 
+    updatedAt DateTime @updatedAt
+}
