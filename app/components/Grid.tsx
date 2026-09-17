@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { Connect4Controller, GameStatus, Player } from "../lib/connect4Controller";
+import { useEffect, useRef } from "react";
+import { Connect4Controller, Player } from "../lib/connect4Controller";
 import { GameSubmission } from "../lib/database.types";
 import GameOver from "./GameOver";
 import { useConnect4Game } from "../hooks/useConnect4Game";
@@ -98,20 +98,6 @@ export default function Grid({
                 display: "grid",
                 gridTemplateColumns: `repeat(${controller.width}, minmax(0, 1fr))`,
               }}
-      <div className="text-lg font-semibold">{getStatusMessage()}</div>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(${controller.width}, minmax(0, 1fr))`,
-        }}
-      >
-        {gameStatus.board.map((row, rowIndex) =>
-          row.map((cell, colIndex) => (
-            <button
-              key={`${rowIndex}-${colIndex}`}
-              className="aspect-square w-10 h-10 border-1 border-gray-300 dark:border-gray-700 transition-colors"
-              onClick={() => handleColumnClick(colIndex)}
-              disabled={isComputerTurn}
             >
               {gameStatus.board.map((row, rowIndex) =>
                 row.map((cell, colIndex) => (
@@ -119,6 +105,7 @@ export default function Grid({
                     key={`${rowIndex}-${colIndex}`}
                     className="aspect-square w-10 h-10 border-1 border-gray-300 dark:border-gray-700 transition-colors"
                     onClick={() => handleColumnClick(colIndex)}
+                    disabled={isComputerTurn}
                   >
                     <div
                       className="w-full h-full rounded-full"
