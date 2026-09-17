@@ -59,8 +59,7 @@ export class Connect4Controller {
       this.board[row][column] = this.currentPlayer;
       if (this.checkWin()) {
         this.gameState = "won";
-      }
-      else if (this.checkDraw()) this.gameState = "draw";
+      } else if (this.checkDraw()) this.gameState = "draw";
       else this.changePlayer();
 
       return this.getStatus();
@@ -105,7 +104,6 @@ export class Connect4Controller {
       for (let column = 0; column < this.width; column++) {
         for (const [deltaRow, deltaColumn] of offsets) {
           if (hasFourInDirection(row, column, deltaRow, deltaColumn)) {
-
             return true;
           }
         }

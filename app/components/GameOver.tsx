@@ -8,10 +8,7 @@ const WINNER_COLOURS: Record<number, string> = {
   2: "text-yellow-500",
 };
 
-export default function GameOver({
-  gameState,
-  winner,
-}: GameOverProps) {
+export default function GameOver({ gameState, winner }: GameOverProps) {
   return (
     <div className="flex flex-col items-center gap-4 p-8">
       <div className="text-2xl font-bold">

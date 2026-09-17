@@ -36,14 +36,17 @@ export default function Grid({ controller }: GridProps) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(result),
-    }).then(async (response) => {
-      if (!response.ok) {
-        const { error } = await response.json();
+    })
+      .then(async (response) => {
+        console.log("Got response", response);
+        if (!response.ok) {
+          const { error } = await response.json();
+          console.error("Failed to record game result:", error);
+        }
+      })
+      .catch((error) => {
         console.error("Failed to record game result:", error);
-      }
-    }).catch((error) => {
-      console.error("Failed to record game result:", error);
-    });
+      });
   }, [gameStatus]);
 
   const handleColumnClick = (column: number) => {
@@ -75,10 +78,7 @@ export default function Grid({ controller }: GridProps) {
     <div className="flex flex-col items-center gap-4">
       <div>
         {gameStatus.state === "won" || gameStatus.state === "draw" ? (
-          <GameOver
-            gameState={gameStatus.state}
-            winner={gameStatus.winner}
-          />
+          <GameOver gameState={gameStatus.state} winner={gameStatus.winner} />
         ) : (
           <div>
             <div className="text-lg font-semibold">{getStatusMessage()}</div>
