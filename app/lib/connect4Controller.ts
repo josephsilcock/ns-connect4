@@ -50,15 +50,59 @@ export class Connect4Controller {
   }
 
   public makeMove(column: number): GameStatus | null {
-    console.log("Dropping a token into a column:", column);
-
-    // This method needs to be implemented!
     const row = this.getLowestAvailablePosition(column);
     if (this.validMove(row, column)) {
       this.board[row][column] = this.currentPlayer;
+
+      if (this.checkDraw()) this.gameState = "draw";
+      if (this.checkWin()) this.gameState = "won";
       return this.getStatus();
     }
     return null;
+  }
+
+  private checkWin(): boolean {
+    const offsets = [
+      [0, 1], // horizontal
+      [1, 0], // vertical
+      [1, 1], // diagonal down-right
+      [1, -1], // diagonal down-left
+    ];
+
+    const hasFourInDirection = (
+      row: number,
+      column: number,
+      deltaRow: number,
+      deltaColumn: number,
+    ): boolean => {
+      for (let step = 0; step < 4; step++) {
+        const r = row + deltaRow * step;
+        const c = column + deltaColumn * step;
+        if (this.board[r]?.[c] !== this.currentPlayer) {
+          return false;
+        }
+      }
+      return true;
+    };
+
+    for (let row = 0; row < this.height; row++) {
+      for (let column = 0; column < this.width; column++) {
+        for (const [deltaRow, deltaColumn] of offsets) {
+          if (hasFourInDirection(row, column, deltaRow, deltaColumn)) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
+  }
+
+  private checkDraw(): boolean {
+    for (let i = 0; i < this.width; i++) {
+      if (this.board[0][i] === 0) return false;
+    }
+    return true;
   }
 
   public getStatus(): GameStatus {
