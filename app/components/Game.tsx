@@ -26,6 +26,8 @@ export default function Game() {
   const [playerOneColour, setPlayerOneColour] = useState<string | null>(null);
   const [playerTwoColour, setPlayerTwoColour] = useState<string | null>(null);
   const [hasStarted, setHasStarted] = useState(false);
+  const [playerOneName, setPlayerOneName] = useState("");
+  const [playerTwoName, setPlayerTwoName] = useState("");
 
   const handleRestart = () => {
     controller.newGame();
@@ -78,12 +80,40 @@ export default function Game() {
     </div>
   );
 
-  const playerTwoName = vsComputer ? "Computer" : "Player 2";
+  const playerTwoLabel = vsComputer ? "Computer" : "Player 2";
+  const displayPlayerOneName = playerOneName.trim() || "Player 1";
+  const displayPlayerTwoName = vsComputer
+    ? "Computer"
+    : playerTwoName.trim() || "Player 2";
 
   if (!hasStarted || playerOneColour === null || playerTwoColour === null) {
     return (
       <div className="flex flex-col items-center gap-6">
         {opponentToggle}
+        <div className="flex w-full max-w-md flex-col gap-4 sm:flex-row">
+          <label className="flex flex-1 flex-col gap-1 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            Player 1 name
+            <input
+              type="text"
+              value={playerOneName}
+              onChange={(event) => setPlayerOneName(event.target.value)}
+              placeholder="Player 1"
+              className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-black dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-zinc-50"
+            />
+          </label>
+          {!vsComputer && (
+            <label className="flex flex-1 flex-col gap-1 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              Player 2 name
+              <input
+                type="text"
+                value={playerTwoName}
+                onChange={(event) => setPlayerTwoName(event.target.value)}
+                placeholder="Player 2"
+                className="rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-black dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:focus:ring-zinc-50"
+              />
+            </label>
+          )}
+        </div>
         <ColourPicker
           label="Player 1"
           selected={playerOneColour}
@@ -93,8 +123,8 @@ export default function Game() {
         <ColourPicker
           label={
             playerOneColour
-              ? playerTwoName
-              : `${playerTwoName} — waiting for player 1 to choose`
+              ? playerTwoLabel
+              : `${playerTwoLabel} — waiting for player 1 to choose`
           }
           selected={playerTwoColour}
           opponentColour={playerOneColour}
@@ -127,6 +157,8 @@ export default function Game() {
         colours={colours}
         opponent={vsComputer ? opponent : undefined}
         computerPlayer={vsComputer ? COMPUTER_PLAYER : undefined}
+        playerOneName={displayPlayerOneName}
+        playerTwoName={displayPlayerTwoName}
       />
       {opponentToggle}
       <button

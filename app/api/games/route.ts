@@ -13,18 +13,33 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (body.winner === undefined || body.loser === undefined) {
+    if (!body.playerOneName || !body.playerTwoName || !body.winner) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 },
       );
-    } else if (body.winner === 1) {
-      await prisma.games.create({ data: { playerOneWin: true } });
-    } else if (body.winner === 2) {
-      await prisma.games.create({ data: { playerTwoWin: true } });
-    } else {
-      await prisma.games.create({});
     }
+
+    if (
+      body.winner !== body.playerOneName &&
+      body.winner !== body.playerTwoName &&
+      body.winner !== "draw"
+    ) {
+      return NextResponse.json(
+        {
+          error: `winner must be "${body.playerOneName}", "${body.playerTwoName}", or "draw"`,
+        },
+        { status: 400 },
+      );
+    }
+
+    await prisma.games.create({
+      data: {
+        playerOneName: body.playerOneName,
+        playerTwoName: body.playerTwoName,
+        winner: body.winner,
+      },
+    });
 
     return NextResponse.json({ status: 200 });
   } catch (error) {

@@ -3,6 +3,7 @@ import { Player } from "../lib/connect4Controller";
 type GameOverProps = {
   gameState: "won" | "draw";
   winner: number | undefined;
+  winnerName: string;
   /** Piece colour per player. Index 0 is the empty cell. */
   colours: Record<Player, string>;
 };
@@ -10,6 +11,7 @@ type GameOverProps = {
 export default function GameOver({
   gameState,
   winner,
+  winnerName,
   colours,
 }: GameOverProps) {
   return (
@@ -17,8 +19,9 @@ export default function GameOver({
       <div className="text-2xl font-bold">
         {gameState === "won" && winner !== undefined ? (
           <>
-            Player{" "}
-            <span style={{ color: colours[winner as Player] }}>{winner}</span>{" "}
+            <span style={{ color: colours[winner as Player] }}>
+              {winnerName}
+            </span>{" "}
             wins!
           </>
         ) : (

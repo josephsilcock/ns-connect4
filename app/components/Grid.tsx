@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Connect4Controller, Player } from "../lib/connect4Controller";
 import { GameSubmission } from "../lib/database.types";
 import GameOver from "./GameOver";
+import { Connect4Controller, Player } from "../lib/connect4Controller";
 import { useConnect4Game } from "../hooks/useConnect4Game";
 import { Opponent } from "../lib/opponents/opponent";
 
@@ -11,6 +11,8 @@ type GridProps = {
   controller: Connect4Controller;
   computerPlayer?: Player;
   opponent?: Opponent;
+  playerOneName: string;
+  playerTwoName: string;
   /** Piece colour per player. Index 0 is the empty cell. */
   colours: Record<Player, string>;
 };
@@ -19,6 +21,8 @@ export default function Grid({
   controller,
   computerPlayer,
   opponent,
+  playerOneName,
+  playerTwoName,
   colours,
 }: GridProps) {
   const { gameStatus, isComputerTurn, playColumn } = useConnect4Game(
@@ -27,16 +31,25 @@ export default function Grid({
   );
   const hasReportedResult = useRef(false);
 
+  const getPlayerName = (player: Player) =>
+    player === 1 ? playerOneName : playerTwoName;
+
   useEffect(() => {
     if (hasReportedResult.current) return;
     if (gameStatus.state !== "won" && gameStatus.state !== "draw") return;
 
     hasReportedResult.current = true;
 
-    const result: GameSubmission =
-      gameStatus.state === "won"
-        ? { winner: gameStatus.winner!, loser: gameStatus.winner === 1 ? 2 : 1 }
-        : { winner: 0, loser: 0 };
+    const result: GameSubmission = {
+      playerOneName,
+      playerTwoName,
+      winner:
+        gameStatus.state === "won"
+          ? gameStatus.winner === 1
+            ? playerOneName
+            : playerTwoName
+          : "draw",
+    };
 
     fetch("/api/games", {
       method: "POST",
@@ -44,7 +57,6 @@ export default function Grid({
       body: JSON.stringify(result),
     })
       .then(async (response) => {
-        console.log("Got response", response);
         if (!response.ok) {
           const { error } = await response.json();
           console.error("Failed to record game result:", error);
@@ -53,7 +65,7 @@ export default function Grid({
       .catch((error) => {
         console.error("Failed to record game result:", error);
       });
-  }, [gameStatus]);
+  }, [gameStatus, playerOneName, playerTwoName]);
 
   const handleColumnClick = (column: number) => {
     if (gameStatus.state !== "ongoing" || isComputerTurn) {
@@ -74,9 +86,9 @@ export default function Grid({
       case "ongoing":
         return isComputerTurn
           ? "Computer is thinking..."
-          : `Player ${gameStatus.currentPlayer}'s turn`;
+          : `${getPlayerName(gameStatus.currentPlayer)}'s turn`;
       case "won":
-        return `Player ${gameStatus.winner} wins!`;
+        return `${getPlayerName(gameStatus.winner!)} wins!`;
       case "draw":
         return "Draw!";
     }
@@ -100,6 +112,11 @@ export default function Grid({
           <GameOver
             gameState={gameStatus.state}
             winner={gameStatus.winner}
+            winnerName={
+              gameStatus.winner !== undefined
+                ? getPlayerName(gameStatus.winner)
+                : ""
+            }
             colours={colours}
           />
         ) : (

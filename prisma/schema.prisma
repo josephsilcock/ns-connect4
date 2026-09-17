@@ -8,8 +8,9 @@ datasource db {
 
 model Games {
     id Int @id @default(autoincrement())
-    playerOneWin Boolean @default(false)
-    playerTwoWin Boolean @default(false)
+    playerOneName String
+    playerTwoName String
+    winner String
 }
 
 model GameStatus {
