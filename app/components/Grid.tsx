@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Connect4Controller, GameStatus, Player } from "../lib/connect4Controller";
+import { useEffect, useRef } from "react";
+import { Connect4Controller, Player } from "../lib/connect4Controller";
 import { GameSubmission } from "../lib/database.types";
 import GameOver from "./GameOver";
 import { useConnect4Game } from "../hooks/useConnect4Game";
@@ -97,19 +97,23 @@ export default function Grid({
     <div className="flex flex-col items-center gap-4">
       <div>
         {gameStatus.state === "won" || gameStatus.state === "draw" ? (
-          <GameOver gameState={gameStatus.state} winner={gameStatus.winner} />
+          <GameOver
+            gameState={gameStatus.state}
+            winner={gameStatus.winner}
+            colours={colours}
+          />
         ) : (
           <div>
             <div className="flex items-center gap-2 text-lg font-semibold">
-        {statusColour && (
-          <span
-            aria-hidden
-            className="h-4 w-4 rounded-full ring-1 ring-black/10 dark:ring-white/20"
-            style={{ backgroundColor: statusColour }}
-          />
-        )}
-        {getStatusMessage()}
-      </div>
+              {statusColour && (
+                <span
+                  aria-hidden
+                  className="h-4 w-4 rounded-full ring-1 ring-black/10 dark:ring-white/20"
+                  style={{ backgroundColor: statusColour }}
+                />
+              )}
+              {getStatusMessage()}
+            </div>
             <div
               style={{
                 display: "grid",

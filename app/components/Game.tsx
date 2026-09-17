@@ -3,11 +3,15 @@
 import { useMemo, useState } from "react";
 import { Connect4Controller, Player } from "../lib/connect4Controller";
 import { isColourPairAllowed } from "../lib/colours";
+import { RandomOpponent } from "../lib/opponents/randomOpponent";
 import ColourPicker from "./ColourPicker";
 import Grid from "./Grid";
 
 const BOARD_WIDTH = 7;
 const BOARD_HEIGHT = 6;
+
+/** The computer always takes player 2, so player 1 moves first. */
+const COMPUTER_PLAYER: Player = 2;
 
 export default function Game() {
   // Built once. A controller constructed during render would hand Grid an
@@ -16,7 +20,9 @@ export default function Game() {
     () => new Connect4Controller(BOARD_WIDTH, BOARD_HEIGHT),
     [],
   );
+  const opponent = useMemo(() => new RandomOpponent(), []);
   const [gameKey, setGameKey] = useState(0);
+  const [vsComputer, setVsComputer] = useState(true);
   const [playerOneColour, setPlayerOneColour] = useState<string | null>(null);
   const [playerTwoColour, setPlayerTwoColour] = useState<string | null>(null);
   const [hasStarted, setHasStarted] = useState(false);
@@ -34,9 +40,50 @@ export default function Game() {
     }
   };
 
+  const toggleVsComputer = () => {
+    setVsComputer((on) => !on);
+    // The opponent changing mid-game would leave the computer to inherit a
+    // board it never played into, so start afresh.
+    handleRestart();
+  };
+
+  const opponentToggle = (
+    <div className="flex items-center gap-3">
+      <button
+        type="button"
+        role="switch"
+        aria-checked={vsComputer}
+        aria-label="Play against the computer"
+        onClick={toggleVsComputer}
+        className={`relative h-8 w-14 shrink-0 rounded-full transition-colors ${
+          vsComputer
+            ? "bg-black dark:bg-zinc-50"
+            : "bg-zinc-300 dark:bg-zinc-700"
+        }`}
+      >
+        {/* Anchored with left-0: without it the knob starts from its static
+            position, which the button's centred text alignment puts halfway
+            across the pill, and the translate then pushes it off the end. */}
+        <span
+          className={`absolute top-1 left-0 flex h-6 w-6 items-center justify-center rounded-full bg-white text-sm shadow transition-transform dark:bg-black ${
+            vsComputer ? "translate-x-7" : "translate-x-1"
+          }`}
+        >
+          🤖
+        </span>
+      </button>
+      <span className="text-sm font-medium">
+        {vsComputer ? "Playing the computer" : "Two players"}
+      </span>
+    </div>
+  );
+
+  const playerTwoName = vsComputer ? "Computer" : "Player 2";
+
   if (!hasStarted || playerOneColour === null || playerTwoColour === null) {
     return (
       <div className="flex flex-col items-center gap-6">
+        {opponentToggle}
         <ColourPicker
           label="Player 1"
           selected={playerOneColour}
@@ -46,8 +93,8 @@ export default function Game() {
         <ColourPicker
           label={
             playerOneColour
-              ? "Player 2"
-              : "Player 2 — waiting for player 1 to choose"
+              ? playerTwoName
+              : `${playerTwoName} — waiting for player 1 to choose`
           }
           selected={playerTwoColour}
           opponentColour={playerOneColour}
@@ -74,7 +121,14 @@ export default function Game() {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <Grid key={gameKey} controller={controller} colours={colours} />
+      <Grid
+        key={gameKey}
+        controller={controller}
+        colours={colours}
+        opponent={vsComputer ? opponent : undefined}
+        computerPlayer={vsComputer ? COMPUTER_PLAYER : undefined}
+      />
+      {opponentToggle}
       <button
         type="button"
         onClick={handleRestart}
