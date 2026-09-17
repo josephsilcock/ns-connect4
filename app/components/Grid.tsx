@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import {useState} from "react";
 import { Connect4Controller, GameStatus } from "../lib/connect4Controller";
 import GameOver from "./GameOver";
 
@@ -51,7 +51,6 @@ export default function Grid({ controller }: GridProps) {
           <GameOver
             gameState={gameStatus.state}
             winner={gameStatus.winner}
-            onRestart={() => console.log("restart")}
           />
         ) : (
           <div>
