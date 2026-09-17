@@ -13,12 +13,8 @@ type GridProps = {
   opponent?: Opponent;
   playerOneName: string;
   playerTwoName: string;
-};
-
-const PIECE_COLOURS = {
-  0: "transparent",
-  1: "rgb(239, 68, 68)",
-  2: "rgb(234, 179, 8)",
+  /** Piece colour per player. Index 0 is the empty cell. */
+  colours: Record<Player, string>;
 };
 
 export default function Grid({
@@ -27,6 +23,7 @@ export default function Grid({
   opponent,
   playerOneName,
   playerTwoName,
+  colours,
 }: GridProps) {
   const { gameStatus, isComputerTurn, playColumn } = useConnect4Game(
     controller,
@@ -97,6 +94,17 @@ export default function Grid({
     }
   };
 
+  const getStatusColour = () => {
+    if (gameStatus.state === "ongoing")
+      return colours[gameStatus.currentPlayer];
+    if (gameStatus.state === "won" && gameStatus.winner !== undefined) {
+      return colours[gameStatus.winner];
+    }
+    return null;
+  };
+
+  const statusColour = getStatusColour();
+
   return (
     <div className="flex flex-col items-center gap-4">
       <div>
@@ -109,10 +117,20 @@ export default function Grid({
                 ? getPlayerName(gameStatus.winner)
                 : ""
             }
+            colours={colours}
           />
         ) : (
           <div>
-            <div className="text-lg font-semibold">{getStatusMessage()}</div>
+            <div className="flex items-center gap-2 text-lg font-semibold">
+              {statusColour && (
+                <span
+                  aria-hidden
+                  className="h-4 w-4 rounded-full ring-1 ring-black/10 dark:ring-white/20"
+                  style={{ backgroundColor: statusColour }}
+                />
+              )}
+              {getStatusMessage()}
+            </div>
             <div
               style={{
                 display: "grid",
@@ -130,7 +148,7 @@ export default function Grid({
                     <div
                       className="w-full h-full rounded-full"
                       style={{
-                        backgroundColor: PIECE_COLOURS[cell],
+                        backgroundColor: colours[cell],
                       }}
                     />
                   </button>
