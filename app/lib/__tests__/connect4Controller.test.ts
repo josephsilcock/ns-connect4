@@ -45,6 +45,18 @@ describe("Connect4Controller", () => {
     });
   });
 
+  describe("checkDraw", () => {
+    it("should detect a draw when the board is full", () => {
+      const controller = new Connect4Controller(1, 1);
+      controller.newGame();
+
+      const status = controller.makeMove(0);
+
+      expect(status?.state).toBe("draw");
+      expect(status?.winner).toBeUndefined();
+    });
+  });
+
   describe("newGame", () => {
     it("should clear every placed piece when restarting a game in progress", () => {
       const controller = new Connect4Controller(7, 6);
