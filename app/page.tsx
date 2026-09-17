@@ -17,25 +17,30 @@ export default function Home() {
   };
 
   const handleSaveGame = async () => {
-  try {
-    const response = await fetch("/api/game-status", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(controller.getStatus()),
-    });
+    try {
+      const response = await fetch("/api/game-status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(controller.getStatus()),
+      });
 
-    if (!response.ok) {
-      const { error } = await response.json();
-      throw new Error(error ?? `Request failed with ${response.status}`);
+      if (!response.ok) {
+        const { error } = await response.json();
+        throw new Error(error ?? `Request failed with ${response.status}`);
+      }
+    } catch (error) {
+      console.error("Failed to save game:", error);
     }
-  } catch (error) {
-    console.error("Failed to save game:", error);
-  }
   };
 
   const handleLoadGame = async () => {
     try {
       const response = await fetch("/api/game-status");
+
+      if (response.status === 404) {
+        alert('No game saved! Press "Save game" to save a game.');
+        return;
+      }
 
       if (!response.ok) {
         const { error } = await response.json();
