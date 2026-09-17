@@ -49,6 +49,15 @@ export class Connect4Controller {
     return this.getStatus();
   }
 
+  public loadGame(status: GameStatus): GameStatus {
+    this.board = status.board;
+    this.height = status.board.length;
+    this.width = status.board[0]?.length ?? this.width;
+    this.currentPlayer = status.currentPlayer;
+    this.gameState = status.state;
+    return this.getStatus();
+  }
+
   public makeMove(column: number): GameStatus | null {
     console.log("Dropping a token into a column:", column);
 

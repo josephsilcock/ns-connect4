@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Grid from "./components/Grid";
-import { Connect4Controller } from "./lib/connect4Controller";
+import { Connect4Controller, GameStatus } from "./lib/connect4Controller";
 
 export default function Home() {
   const controller: Connect4Controller = useMemo(
@@ -16,12 +16,38 @@ export default function Home() {
     setGameKey((key) => key + 1);
   };
 
-  const handleLoadGame = () => {
+  const handleSaveGame = async () => {
+  try {
+    const response = await fetch("/api/game-status", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(controller.getStatus()),
+    });
 
+    if (!response.ok) {
+      const { error } = await response.json();
+      throw new Error(error ?? `Request failed with ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Failed to save game:", error);
+  }
   };
 
-  const handleSaveGame = () => {
+  const handleLoadGame = async () => {
+    try {
+      const response = await fetch("/api/game-status");
 
+      if (!response.ok) {
+        const { error } = await response.json();
+        throw new Error(error ?? `Request failed with ${response.status}`);
+      }
+
+      const status: GameStatus = await response.json();
+      controller.loadGame(status);
+      setGameKey((key) => key + 1);
+    } catch (error) {
+      console.error("Failed to load saved game:", error);
+    }
   };
 
   return (

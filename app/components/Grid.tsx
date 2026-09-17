@@ -15,7 +15,9 @@ const PIECE_COLOURS = {
 
 export default function Grid({ controller }: GridProps) {
   const [gameStatus, setGameStatus] = useState<GameStatus>(() =>
-    controller.newGame(),
+    controller.getStatus().state === "idle"
+      ? controller.newGame()
+      : controller.getStatus(),
   );
 
   const handleColumnClick = (column: number) => {
