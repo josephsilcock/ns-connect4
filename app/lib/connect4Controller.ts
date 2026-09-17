@@ -63,13 +63,15 @@ export class Connect4Controller {
     return null;
   }
 
-  public changePlayer(): GameStatus | null {
+  private changePlayer(): GameStatus | null {
     if (this.getStatus().currentPlayer == 1) {
       this.currentPlayer = 2;
     } else {
       this.currentPlayer = 1;
     }
     return this.getStatus();
+  }
+
   private checkDraw(): boolean {
     for (let i = 0; i < this.width; i++) {
       if (this.board[0][i] === 0) return false;

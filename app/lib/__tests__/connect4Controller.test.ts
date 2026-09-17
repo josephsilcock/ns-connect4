@@ -83,7 +83,7 @@ describe("Connect4Controller", () => {
       expect(status?.currentPlayer).toBe(2);
     });
   });
-      
+
   describe("checkDraw", () => {
     it("should detect a draw when the board is full", () => {
       const controller = new Connect4Controller(1, 1);
@@ -147,6 +147,6 @@ describe("Connect4Controller", () => {
       controller.newGame();
 
       expect(controller.makeMove(0)).not.toBeNull();
-      });
-   });
+    });
+  });
 });
