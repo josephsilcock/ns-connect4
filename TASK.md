@@ -204,6 +204,46 @@ What happens to the games you saved in task 4?
 
 ---
 
+### Extra: Let players pick their colour
+
+#### Background
+
+Every game is red against yellow, because the two colours are hard-coded in a
+`PIECE_COLOURS` object in `Grid.tsx`. Let the players choose instead.
+
+It is a small feature, but it is a good excuse to notice where a decision
+*belongs*. The controller has no idea what a counter looks like — it deals in
+players 1 and 2 — and it should stay that way.
+
+#### Task
+
+- Let each player pick a colour before the game starts.
+- Use those colours for the counters, and anywhere else the game refers to a
+  player — the "Player 1's turn" message included.
+
+Things to think about:
+
+- Where does the chosen colour live? It is presentation, not game state, so
+  pushing it into `GameStatus` alongside the board is probably the wrong move.
+  What is the smallest change that gets the colours from wherever the player
+  picks them down to the cell that has to render one?
+- Stop the two players picking the same colour — a board where you cannot tell
+  whose counter is whose is worse than red versus yellow.
+- A free colour picker gives you white counters on a white board and two shades
+  of blue nobody can distinguish. A short list of colours you have chosen
+  yourself sidesteps both. Around 1 in 12 men cannot reliably tell red from
+  green, so a palette that is only red and green is a poor one.
+- An empty cell is currently just another entry in `PIECE_COLOURS`. Is "no
+  counter here" really the same kind of thing as a player's colour?
+
+#### Acceptance criteria
+
+- As a player, I can choose my colour before the game starts
+- As a player, my counters are shown in the colour I chose
+- Two players cannot both choose the same colour
+
+---
+
 ### Extra: Move history, undo and replay
 
 #### Background
