@@ -96,6 +96,84 @@ describe("Connect4Controller", () => {
     });
   });
 
+  describe("checkWin", () => {
+    it("should detect a horizontal win", () => {
+      const controller = new Connect4Controller(4, 4);
+      controller.newGame();
+
+      controller.makeMove(0);
+      controller.makeMove(1);
+      controller.makeMove(2);
+      const status = controller.makeMove(3);
+
+      expect(status?.state).toBe("won");
+      expect(status?.winner).toBe(1);
+    });
+
+    it("should detect a vertical win", () => {
+      const controller = new Connect4Controller(1, 4);
+      controller.newGame();
+
+      controller.makeMove(0);
+      controller.makeMove(0);
+      controller.makeMove(0);
+      const status = controller.makeMove(0);
+
+      expect(status?.state).toBe("won");
+      expect(status?.winner).toBe(1);
+    });
+
+    it("should detect a descending diagonal win (top-left to bottom-right)", () => {
+      const controller = new Connect4Controller(4, 4);
+      controller.newGame();
+
+      controller.makeMove(3); // fills row 3
+      controller.makeMove(2); // fills rows 3, 2
+      controller.makeMove(2);
+      controller.makeMove(1); // fills rows 3, 2, 1
+      controller.makeMove(1);
+      controller.makeMove(1);
+      controller.makeMove(0); // fills rows 3, 2, 1, 0
+      controller.makeMove(0);
+      controller.makeMove(0);
+      const status = controller.makeMove(0);
+
+      expect(status?.state).toBe("won");
+      expect(status?.winner).toBe(1);
+    });
+
+    it("should detect an ascending diagonal win (bottom-left to top-right)", () => {
+      const controller = new Connect4Controller(4, 4);
+      controller.newGame();
+
+      controller.makeMove(0); // fills row 3
+      controller.makeMove(1); // fills rows 3, 2
+      controller.makeMove(1);
+      controller.makeMove(2); // fills rows 3, 2, 1
+      controller.makeMove(2);
+      controller.makeMove(2);
+      controller.makeMove(3); // fills rows 3, 2, 1, 0
+      controller.makeMove(3);
+      controller.makeMove(3);
+      const status = controller.makeMove(3);
+
+      expect(status?.state).toBe("won");
+      expect(status?.winner).toBe(1);
+    });
+
+    it("should not declare a win with only three in a row", () => {
+      const controller = new Connect4Controller(4, 4);
+      controller.newGame();
+
+      controller.makeMove(0);
+      controller.makeMove(1);
+      const status = controller.makeMove(2);
+
+      expect(status?.state).toBe("ongoing");
+      expect(status?.winner).toBeUndefined();
+    });
+  });
+
   describe("newGame", () => {
     it("should clear every placed piece when restarting a game in progress", () => {
       const controller = new Connect4Controller(7, 6);
