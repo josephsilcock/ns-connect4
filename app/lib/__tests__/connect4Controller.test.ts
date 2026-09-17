@@ -44,4 +44,43 @@ describe("Connect4Controller", () => {
       expect(status?.board[0][0]).not.toBe(0);
     });
   });
+
+  describe("switchPlayers", () => {
+    it("should be able to start with a player", () => {
+      const controller = new Connect4Controller(1, 1);
+      controller.newGame();
+      const status = controller.getStatus();
+      expect(status?.currentPlayer).toBe(1);
+    });
+    it("should be able to change to player 2 after player 1 made a valid move", () => {
+      const controller = new Connect4Controller(1, 1);
+      controller.newGame();
+      controller.makeMove(0);
+      const status = controller.getStatus();
+      expect(status?.currentPlayer).toBe(2);
+    });
+    it("should be able to change to player 1 after player 2 made a valid move", () => {
+      const controller = new Connect4Controller(1, 2);
+      controller.newGame();
+      controller.makeMove(0);
+      controller.makeMove(0);
+      const status = controller.getStatus();
+      expect(status?.currentPlayer).toBe(1);
+    });
+    it("should not be able to change player 2 after player 1 made an invalid move", () => {
+      const controller = new Connect4Controller(1, 1);
+      controller.newGame();
+      controller.makeMove(21);
+      const status = controller.getStatus();
+      expect(status?.currentPlayer).toBe(1);
+    });
+    it("should not be able to change player 1 after player 2 made an invalid move", () => {
+      const controller = new Connect4Controller(1, 1);
+      controller.newGame();
+      controller.makeMove(0);
+      controller.makeMove(0);
+      const status = controller.getStatus();
+      expect(status?.currentPlayer).toBe(2);
+    });
+  });
 });
